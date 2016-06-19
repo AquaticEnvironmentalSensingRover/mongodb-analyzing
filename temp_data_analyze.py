@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
+import time
 
 db = "test_data1"
 col = "tempData"
@@ -20,14 +21,19 @@ for ii in range(sensorAmount):
         
     data.append(newData)
     
+t0 = time.time()
 
 args=[]
 for ii in data:
     x, y=zip(*ii)
-    args.append(x)
+    args.append( np.add(x,-t0) )
     args.append(y)
     args.append("b")
     
 # Plot data
+plt.figure(1)
+plt.clf
 plt.plot(*args)
+plt.title('Latest data %f' % t0 )
+plt.axis([-100, 5, 22, 26])
 plt.show()
