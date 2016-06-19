@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from pymongo import MongoClient
 import time
 
+colors = ["r","g","b","c"]
+
 db = "test_data1"
 col = "tempData"
 
@@ -25,11 +27,11 @@ for ii in range(sensorAmount):
 t0 = time.time()
 
 args=[]
-for ii in data:
+for index, ii in enumerate(data):
     x, y=zip(*ii)
     args.append( np.add(x,-t0) )
     args.append(y)
-    args.append("b")
+    args.append(colors[index])
     
 # Plot data
 plt.figure(1)
