@@ -20,18 +20,12 @@ for ii in range(sensorAmount):
         
     data.append(newData)
     
-x=[]
-y=[]
-# Create x and y - Array with arrays of the individual sensor readings
-for ii in data:
-    newX, newY=zip(*ii)
-    x.append(newX)
-    y.append(newY)
 
 args=[]
-for ii in range(len(data)):
-    args.append(x[ii])
-    args.append(y[ii])
+for ii in data:
+    x, y=zip(*ii)
+    args.append(x)
+    args.append(y)
     args.append("b")
     
 # Plot data
