@@ -33,7 +33,7 @@ for ii in data:
     
 # Plot data
 plt.figure(1)
-plt.clf
+plt.clf()
 plt.plot(*args)
 plt.title('Latest data %f' % t0 )
 plt.axis([-100, 5, 22, 26])
