@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
@@ -36,4 +37,6 @@ plt.clf
 plt.plot(*args)
 plt.title('Latest data %f' % t0 )
 plt.axis([-100, 5, 22, 26])
+plt.ylabel("Temperature (degC)")
+plt.xlabel("Time (s)")
 plt.show()
