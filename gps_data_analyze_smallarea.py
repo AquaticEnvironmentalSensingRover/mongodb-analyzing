@@ -17,7 +17,8 @@ for jj in dbCol.find({"atype":"GPS"}):
 print data
 x, y=zip(*data)
 # Plot data
-fig = plt.figure()
+fig = plt.figure(1)
+fig.clf()
 
 
 '''
@@ -28,9 +29,13 @@ fig = plt.figure()
          Coordinates for string below \/ - currently breaks map
 '''
 themap = Basemap(projection = "gall",
-         resolution = 'i', #detail level (C,L,M,H,F)
-         area_thresh = 0, #
-              )
+                resolution = 'i', #detail level (C,L,M,H,F)
+                area_thresh = 0,
+                llcrnrlon = -71.5,           # lower-left corner longitude
+                llcrnrlat = 41.3,            # lower-left corner latitude
+                urcrnrlon = -71.1,            # upper-right corner longitude
+                urcrnrlat = 41.9               # upper-right corner latitude
+                )
               
 themap.drawcoastlines()
 themap.drawcountries()
