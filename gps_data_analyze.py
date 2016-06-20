@@ -12,7 +12,6 @@ dbCol = (mongo[db])[col]
 data = []
 
 for jj in dbCol.find({"atype":"GPS"}):
-    print(jj)
     data.append([ (jj["param"])["lon"], (jj["param"])["lat"] ])
     
 # Plot data
