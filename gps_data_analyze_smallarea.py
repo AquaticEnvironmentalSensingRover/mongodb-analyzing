@@ -28,14 +28,6 @@ x, y=zip(*data)
 fig = plt.figure(1)
 fig.clf()
 
-
-'''
-         llcrnrlon = 41.730556,           # lower-left corner longitude
-         llcrnrlat = -71.346944,            # lower-left corner latitude
-         urcrnrlon =41.745278,            # upper-right corner longitude
-         urcrnrlat = -71.310833,               # upper-right corner latitude
-         Coordinates for string below \/ - currently breaks map
-'''
 themap = Basemap(projection = "gall",
                 resolution = 'i', #detail level (C,L,M,H,F)
                 area_thresh = 0,
