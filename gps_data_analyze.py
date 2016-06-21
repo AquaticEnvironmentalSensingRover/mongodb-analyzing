@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 from pymongo import MongoClient
 from scipy.misc import imread
 
-db = "test_data3"
-col = "gpsData"
+db = input("DB Name: ")
+col = input("Col Name: ")
 
-mongo = MongoClient(host="10.0.2.81")
+mongo = MongoClient(host="10.0.2.189")
 
 dbCol = (mongo[db])[col]
 

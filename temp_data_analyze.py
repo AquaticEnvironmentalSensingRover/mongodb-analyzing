@@ -6,12 +6,12 @@ import time
 
 colors = ["r","g","b","c","k"]
 
-db = "test_data2"
-col = "tempData"
+db = input("DB Name: ")
+col = input("Col Name: ")
 
 sensorAmount = 5
 
-mongo = MongoClient(host="10.0.2.81")
+mongo = MongoClient(host="10.0.2.189")
 
 dbCol = (mongo[db])[col]
 
