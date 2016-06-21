@@ -3,10 +3,13 @@ from mpl_toolkits.basemap import Basemap
 from pymongo import MongoClient
 import time
 
-db = input("DB Name: ")
-col = input("Col Name: ")
-
 mongo = MongoClient(host="10.0.2.189")
+
+print("Databases:\n" + str(mongo.database_names()))
+db = raw_input("DB Name: ")
+print("\nCollections:\n" + str(mongo[db].collection_names()))
+col = raw_input("Col Name: ")
+
 previousTime = time.time() # Used to find time spent on loading MongoDB server
 
 dbCol = (mongo[db])[col]

@@ -6,12 +6,14 @@ import time
 
 colors = ["r","g","b","c","k"]
 
-db = input("DB Name: ")
-col = input("Col Name: ")
+mongo = MongoClient(host="10.0.2.189")
+
+print("Databases:\n" + str(mongo.database_names()))
+db = raw_input("DB Name: ")
+print("\nCollections:\n" + str(mongo[db].collection_names()))
+col = raw_input("Col Name: ")
 
 sensorAmount = 5
-
-mongo = MongoClient(host="10.0.2.189")
 
 dbCol = (mongo[db])[col]
 
