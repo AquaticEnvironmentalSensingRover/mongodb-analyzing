@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 from pymongo import MongoClient
+import time
 
 db = "test_data4"
 col = "readData"
 
 mongo = MongoClient(host="10.0.2.81")
+previousTime = time.time() # Used to find time spent on loading MongoDB server
 
 dbCol = (mongo[db])[col]
 
@@ -15,6 +17,12 @@ for jj in dbCol.find({"atype":"GPS"}):
     data.append([ (jj["param"])["lon"], (jj["param"])["lat"] ])
     
 print data
+
+print ("==============================\n The Initialization and Read of the"
+        + " database took " + str(time.time()-previousTime) + " seconds")
+
+previousTime = time.time() # Used to find time rendering plot
+
 x, y=zip(*data)
 # Plot data
 fig = plt.figure(1)
@@ -51,3 +59,5 @@ themap.plot(x, y,
 
 
 plt.show()
+
+print("That plot took " + str(time.time()-previousTime) + " seconds")
