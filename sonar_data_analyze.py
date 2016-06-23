@@ -11,17 +11,15 @@ col = raw_input("Col Name: ")
 
 dbCol = (mongo[db])[col]
 
+t0 = time.time()
+
 dataDepth = []
 dataTime = []
-
-t0 = time.time()
 
 for ii in dbCol.find({"atype":"SONAR"}):
     dataDepth.append(ii["param"])
     dataTime.append( ii["ts"] - t0)
 
-    
-t0 = time.time()
 
 # Plot data
 plt.figure(1)
