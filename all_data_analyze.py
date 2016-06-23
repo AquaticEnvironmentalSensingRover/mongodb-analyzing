@@ -48,7 +48,7 @@ plt.imshow(img, zorder=0, extent=[-180, 180, -90, 90])
 
 # Add house image in specific position
 img = imread("maps/house.jpg")
-plt.imshow(img, zorder=0, extent=[-71.343431, -71.342690, 41.739744, 41.740059])
+plt.imshow(img, zorder=0, extent=[-71.343431, -71.3424, 41.739744, 41.740059])
 
 
 # ======================PRESSURE======================
