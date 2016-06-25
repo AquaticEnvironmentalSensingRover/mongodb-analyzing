@@ -51,6 +51,15 @@ img = imread("maps/house.jpg")
 plt.imshow(img, zorder=0, extent=[-71.343431, -71.3424, 41.739744, 41.740059])
 
 
+# Add zoomed-out house image in specific position
+img = imread("maps/house2.jpg")
+plt.imshow(img, zorder=0, extent=[-71.34516, -71.34072, 41.738835, 41.740670])
+
+# UL 41.740657, -71.345162
+# LL 41.738835, -71.345169
+# UR 41.740670, -71.340646
+# LR 41.738851, -71.340643
+
 # ======================PRESSURE======================
 plt.subplot(222)
 plt.autoscale(True)
