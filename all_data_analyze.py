@@ -60,6 +60,14 @@ plt.imshow(img, zorder=0, extent=[-71.34516, -71.34072, 41.738835, 41.740670])
 # UR 41.740670, -71.340646
 # LR 41.738851, -71.340643
 
+
+# Add Brick Yard Pond map
+img = imread("maps/byp.jpg")
+plt.imshow(img, zorder=0, extent=[-71.330371, -71.307692, 41.730781, 41.739235])
+
+# LL 41.730781, -71.330371
+# UR 41.739235, -71.307692
+
 # ======================PRESSURE======================
 plt.subplot(222)
 plt.autoscale(True)
