@@ -130,5 +130,24 @@ for index, ii in enumerate(data):
 plt.legend()
 
 
-# Show plot
+# ======================ADC/ODO Sensor======================
+plt.figure(2)
+plt.clf()
+plt.subplot(111)
+plt.autoscale(True)
+t0 = time.time()
+plt.title("ODO (Latest data: %f)" % t0 )
+plt.ylabel("Dat value (idk)")
+plt.xlabel("Time (s)")
+
+dataReading = []
+dataTime = []
+
+for ii in dbCol.find({"atype":"ODO"}):
+    dataReading.append(ii["param"])
+    dataTime.append( ii["ts"] - t0)
+
+plt.plot(dataTime, dataReading, "g-")
+
+
 plt.show()
