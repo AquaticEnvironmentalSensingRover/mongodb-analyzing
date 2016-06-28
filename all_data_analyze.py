@@ -80,7 +80,7 @@ dataPressr = []
 dataTime = []
 
 for ii in dbCol.find({"atype":"PRESR"}):
-    dataPressr.append( (ii["param"])["pressure"])
+    dataPressr.append( (ii["param"])["mbar"])
     dataTime.append( ii["ts"] - t0)
 
 plt.plot(dataTime, dataPressr, "ro")
