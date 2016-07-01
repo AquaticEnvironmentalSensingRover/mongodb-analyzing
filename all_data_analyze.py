@@ -30,14 +30,16 @@ plt.autoscale(True)
 plt.plot( -71.343310 , 41.739910 , 'rd' ) 
 
 # Get GPS data
-lon = []
-lat = []
-for jj in dbCol.find({"atype":"GPS"}):
-    lon.append((jj["param"])["lon"])
-    lat.append((jj["param"])["lat"])
-
-# Plot GPS data
-plt.plot(lon, lat, "bo")
+gpsList = [("GPS","bo"), ("IGPS","r-")]
+for ii in gpsList:
+    lon = []
+    lat = []
+    for jj in dbCol.find({"atype":ii[0]}):
+        lon.append((jj["param"])["lon"])
+        lat.append((jj["param"])["lat"])
+    
+    # Plot GPS data
+    plt.plot(lon, lat, ii[1])
 
 # Disable autoscaling to stop images from affecting scale
 plt.autoscale(False)
