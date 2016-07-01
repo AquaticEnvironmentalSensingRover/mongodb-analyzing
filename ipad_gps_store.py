@@ -30,6 +30,6 @@ for trkpt in track.findall('gpx:trkpt',ns):
     timeDataEpoch = time.mktime(timeData.timetuple())
     timeDataHuman = timeData.strftime("%Y-%m-%dT%H:%M.%S")
     
-    dbCol.insert({"atype": "igps", "vertype": 1.1, "ts": timeDataEpoch
+    dbCol.insert({"atype": "IGPS", "vertype": 1.1, "ts": timeDataEpoch
                     , "hts": timeDataHuman, "param": data, "comments": ["iPad GPS"]
                     , "tags": ["iPad", "gps"]})
