@@ -14,7 +14,8 @@ class TimeUtil:
     # use only if data is mentioned in analysis method
     @staticmethod    
     def EpochToTime(epoch):
-        return datetime.datetime.fromtimestamp(epoch).strftime('%H:%M:%S.%f')
+        return datetime.datetime.fromtimestamp(epoch).strftime('%H:%M:%S')
+        
     
     # method for converting between epoch time to a standard date format (Y-M-D)  
     @staticmethod
