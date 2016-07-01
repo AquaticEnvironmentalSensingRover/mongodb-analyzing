@@ -16,6 +16,11 @@ class TimeUtil:
     def EpochToTime(epoch):
         return datetime.datetime.fromtimestamp(epoch).strftime('%H:%M:%S.%f')
     
+    # method for converting between epoch time to a standard date format (Y-M-D)  
+    @staticmethod
+    def EpochToDate(epoch):
+        return datetime.datetime.fromtimestamp(epoch).strftime('%Y-%m-%d')
+    
     # method for converting between datetime and epoch form  
     @staticmethod
     def DateTimeToEpoch(dateTime):
