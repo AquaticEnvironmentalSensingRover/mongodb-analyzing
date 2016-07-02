@@ -22,8 +22,6 @@ root = tree.getroot()
 
 track = root.find("gpx:trk",ns).find("gpx:trkseg",ns)
 
-print track
-
 for trkpt in track.findall('gpx:trkpt',ns):
     data = trkpt.attrib
     data["ele"] = float(trkpt.find("gpx:ele",ns).text)
