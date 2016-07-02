@@ -1,24 +1,20 @@
 import xml.etree.ElementTree as ET
 import datetime as dt
 from pymongo import MongoClient
+import lib.analyze_util as au
 import time
 import pytz
 
 gpxFile = raw_input("GPX File Name: ")
+tree = ET.parse(gpxFile)
+root = tree.getroot()
 
-mongo = MongoClient(host="localhost")
+mongo = MongoClient(host=au.serverAddressSelector())
 
-print("Databases:\n" + str(sorted(mongo.database_names())))
-db = raw_input("DB Name: ")
-print("\nCollections:\n" + str(sorted(mongo[db].collection_names())))
-col = raw_input("Col Name: ")
-
-dbCol = (mongo[db])[col]
+dbCol = au.dbColSelector(mongo)
 
 ns = {'gpx': 'http://www.topografix.com/GPX/1/1'}
 
-tree = ET.parse(gpxFile)
-root = tree.getroot()
 
 track = root.find("gpx:trk",ns).find("gpx:trkseg",ns)
 
