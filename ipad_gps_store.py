@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from datetime import datetime as dt
+import datetime as dt
 from pymongo import MongoClient
 import time
 
@@ -26,7 +26,8 @@ print track
 for trkpt in track.findall('gpx:trkpt',ns):
     data = trkpt.attrib
     data["ele"] = float(trkpt.find("gpx:ele",ns).text)
-    timeData = dt.strptime(trkpt.find("gpx:time",ns).text, "%Y-%m-%dT%H:%M:%S.%fZ")
+    timeData = dt.datetime.strptime(trkpt.find("gpx:time",ns).text, "%Y-%m-%dT%H:%M:%S.%fZ")
+    timeData = timeData + dt.timedelta(hours=-3)
     timeDataEpoch = time.mktime(timeData.timetuple())
     timeDataHuman = timeData.strftime("%Y-%m-%dT%H:%M.%S")
     
