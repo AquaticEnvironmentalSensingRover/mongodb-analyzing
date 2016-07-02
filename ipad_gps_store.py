@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import datetime as dt
 from pymongo import MongoClient
 import time
+import pytz
 
 gpxFile = raw_input("GPX File Name: ")
 
@@ -27,7 +28,7 @@ for trkpt in track.findall('gpx:trkpt',ns):
     data = trkpt.attrib
     data["ele"] = float(trkpt.find("gpx:ele",ns).text)
     timeData = dt.datetime.strptime(trkpt.find("gpx:time",ns).text, "%Y-%m-%dT%H:%M:%S.%fZ")
-    timeData = timeData + dt.timedelta(hours=-3)
+    timeData = pytz.utc.localize(timeData).astimezone(pytz.timezone('US/Eastern'))
     timeDataEpoch = time.mktime(timeData.timetuple())
     timeDataHuman = timeData.strftime("%Y-%m-%dT%H:%M.%S")
     
