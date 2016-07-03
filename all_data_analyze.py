@@ -1,17 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
+import lib.analyze_util as au
 from scipy.misc import imread
 import time
 
-mongo = MongoClient(host="10.0.2.189")
+mongo = MongoClient(host=au.serverAddressSelector())
 
-print("Databases:\n" + str(sorted(mongo.database_names())))
-db = raw_input("DB Name: ")
-print("\nCollections:\n" + str(sorted(mongo[db].collection_names())))
-col = raw_input("Col Name: ")
-
-dbCol = (mongo[db])[col]
+dbCol = au.dbColSelector(mongo)
 
 plt.figure(1)
 plt.clf()
