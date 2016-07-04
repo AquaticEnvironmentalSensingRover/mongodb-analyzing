@@ -5,12 +5,7 @@ import lib.analyze_util as au
 from scipy.misc import imread
 import time
 
-<<<<<<< Updated upstream
 mongo = MongoClient(host=au.serverAddressSelector())
-=======
-mongo = MongoClient(host="10.0.2.197")
-#mongo = MongoClient(host="172.16.0.2")
->>>>>>> Stashed changes
 
 dbCol = au.dbColSelector(mongo)
 
