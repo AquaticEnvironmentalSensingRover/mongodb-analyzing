@@ -116,6 +116,7 @@ plt.title("Temperature (Latest data: %f)" % t0 )
 plt.ylabel("Temperature (degC)")
 plt.xlabel("Time (s)")
 
+colors = ["ro","go","bo","co","ko"]
 
 sensorAmount = 5
 
