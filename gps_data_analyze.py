@@ -1,19 +1,16 @@
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
 from scipy.misc import imread
+import lib.analyze_util as au
 
-mongo = MongoClient(host="10.0.2.189")
 
-print("Databases:\n" + str(mongo.database_names()))
-db = raw_input("DB Name: ")
-print("\nCollections:\n" + str(mongo[db].collection_names()))
-col = raw_input("Col Name: ")
+mongo = MongoClient(host=au.serverAddressSelector())
 
-dbCol = (mongo[db])[col]
+dbCol = au.dbColSelector(mongo)
 
 data = []
 
-for jj in dbCol.find({"atype":"GPS"}):
+for jj in dbCol.find({"atype":"IGPS"}):
     data.append([ (jj["param"])["lon"], (jj["param"])["lat"] ])
     
 # Plot data
