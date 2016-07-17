@@ -150,7 +150,7 @@ dataReading = []
 dataTime = []
 
 for ii in dbCol.find({"atype":"ODO"}):
-    dataReading.append(ii["param"])
+    dataReading.append(ii["param"]["mgL"])
     dataTime.append( ii["ts"] - t0)
 
 plt.plot(dataTime, dataReading, "g-")
