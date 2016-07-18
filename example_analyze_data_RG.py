@@ -4,6 +4,8 @@
 # 160704 RG FUrther mods
 # 160706 RG Push to Git
 # 160707 RG Edited,comments for clarity
+# 160717 PTAG Edit for Run 4
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,6 +15,14 @@ from scipy.misc import imread
 import time
 import datetime
 from matplotlib.dates import DateFormatter
+
+
+# Cut the data for only that when on the lake
+# Epoch times for start and stop
+tStartRun004 = time.mktime( datetime.datetime(2016, 7, 16, 18, 40).timetuple() )
+tStopRun004 = time.mktime( datetime.datetime(2016, 7, 16, 19, 30).timetuple() )
+
+
 
 # Used to format the date/time axis
 formatter = DateFormatter('%H:%M:%S')
@@ -25,7 +35,7 @@ mongo = MongoClient( ) # local
 
 # PICK COLLECTION
 #dbCol = au.dbColSelector(mongo)
-dbCol = ( mongo['AESR_20160703T162159'] )['data']
+dbCol = ( mongo['AESR_20160716T184018'] )['data']
 
 # COMBINED FIGURE FROM  "all_data_analyze.py"
 plt.figure(1)
@@ -56,9 +66,10 @@ for ii in gpsList:
         gpsLon.append((jj["param"])["lon"])  # appending to list is very easy
         gpsLat.append((jj["param"])["lat"])
         gpsTime.append( jj["ts"] )
+        
+    plt.plot(gpsLon, gpsLat , ii[1])
     
     # Plot GPS data
-    plt.plot(gpsLon, gpsLat , ii[1])
 
 # Convert the lists to Numpy ndarray for later use
 gpsLat = np.array( gpsLat )   # now convert to ndarray for later analysis
@@ -92,7 +103,19 @@ plt.imshow(img, zorder=0, extent=[-71.330371, -71.307692, 41.730781, 41.739235])
 # LL 41.730781, -71.330371
 # UR 41.739235, -71.307692
 
+# ZOOM IN 
 
+plt.figure(1000)
+plt.clf()
+
+tStartRun004line = time.mktime( datetime.datetime(2016, 7, 16, 18, 55).timetuple() )
+tStopRun004line = time.mktime( datetime.datetime(2016, 7, 16, 19, 13).timetuple() )
+
+cut = (     ( gpsTime >= tStartRun004 )    &     (gpsTime <= tStopRun004)      ) # Make a cut
+plt.plot(gpsLon[cut], gpsLat[cut] , 'r.' )
+
+cut = (     ( gpsTime >= tStartRun004line )    &     (gpsTime <= tStopRun004line )      ) # Make a cut
+plt.plot(gpsLon[cut], gpsLat[cut] , 'y.' )
 
 
 # ======================PRESSURE======================
@@ -166,11 +189,6 @@ sensorAmount = 5
 timeStamp = []
 data = []
 
-# Create ndarrays - each row is epoch time, temp # , or value
-tempTime = np.empty((0,),dtype=float)
-tempIndex = np.empty((0,),dtype=int)
-tempValue = np.empty((0,),dtype=float)
-
 for ii in range(sensorAmount):  # Loop through all 5 thermometers
     newTimeStamp = []
     newData = []
@@ -181,6 +199,28 @@ for ii in range(sensorAmount):  # Loop through all 5 thermometers
     timeStamp.append(newTimeStamp)
     data.append(newData)
     
+# Create ndarrays - each row is epoch time, temp # , or value
+#tempTime = np.empty((0,),dtype=float)
+#tempIndex = np.empty((0,),dtype=int)
+#tempValue = np.empty((0,),dtype=float)
+    
+# Make Numpy version    
+tempTime = []
+tempIndex = []
+tempValue = []
+
+for ii in dbCol.find({"atype":"TEMP"}):
+    tempTime.append( ii["ts"])
+    tempIndex.append(ii["itype"])
+    tempValue.append(ii["param"])
+
+# Convert the lists to Numpy ndarray for later use
+tempTime = np.array( tempTime )
+tempValue = np.array( tempValue )
+tempIndex = np.array( tempIndex )
+
+
+
 for index, ii in enumerate(data):
     # Usual plot in seconds from now
     # plt.plot(np.add(timeStamp[index],-t0), ii, colors[index]
@@ -212,7 +252,7 @@ odoADC = []
 odoTime = []
 
 for ii in dbCol.find({"atype":"ODO"}):
-    odoADC.append(ii["param"])
+    odoADC.append(ii["param"]["mgL"])
     odoTime.append( ii["ts"] - t0)
 
 plt.plot(odoTime, odoADC, "g-")
@@ -242,14 +282,10 @@ plt.figure(14) ; plt.clf()
 plt.plot( [ datetime.datetime.fromtimestamp(x) for x in gpsTime ], gpsLat , 'r.' )
 plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
 
-# Cut the data for only that when on the lake
-# Epoch times for start and stop
-tStartRun003 = time.mktime( datetime.datetime(2016, 7, 3, 16, 29).timetuple() )
-tStopRun003 = time.mktime( datetime.datetime(2016, 7, 3, 17, 32).timetuple() )
 
 # Show  the gps data within a certain time range
 plt.figure(15) ; plt.clf()
-cut = ( ( gpsTime >= tStartRun003 ) & (gpsTime <= tStopRun003) ) # Make a cut
+cut = ( ( gpsTime >= tStartRun004 ) & (gpsTime <= tStopRun004) ) # Make a cut
 plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (gpsTime[ cut ]) ]  , gpsLat[  cut ]  , 'r.' )
 plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
 
