@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as dates
 from pymongo import MongoClient
 import time
-from lib.time_util import TimeUtil
+import lib.time_util
 from matplotlib.dates import DateFormatter
 
 from sonar_manual_data import *        
