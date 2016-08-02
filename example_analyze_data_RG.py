@@ -29,7 +29,7 @@ mongo = MongoClient( ) # local
 # Epoch times for start and stop
 
 # Run004
-runNum = 5.2
+runNum = 5.3
 
 if(runNum==4) :
     tStartRun = time.mktime( datetime.datetime(2016, 7, 16, 18, 40).timetuple() )
@@ -136,13 +136,6 @@ if runNum==4 :
 
 
 # ======================PRESSURE======================
-plt.figure(14)
-plt.clf()
-plt.autoscale(True)
-t0 = time.time()
-plt.title("Pressure vs. Time (Run: %f)" % runNum )
-plt.ylabel("Pressure (mbar)")
-plt.xlabel("Time (s)")
 
 # Start with lists
 pressrValue = []
@@ -156,9 +149,22 @@ for ii in dbCol.find({"atype":"PRESR"}):
 pressrValue = np.array( pressrValue )
 pressrTime = np.array( pressrTime )
 
+plt.figure(14)
+plt.clf()
+plt.autoscale(True)
+t0 = time.time()
+plt.title("Pressure vs. Time (Run: %f)" % runNum )
+plt.ylabel("Pressure (mbar)")
+plt.xlabel("Time (s)")
+
 plt.plot(pressrTime, pressrValue, "ro")
 
 
+plt.figure(114); plt.clf( )
+plt.hist( pressrValue , bins = 100 )
+plt.title("Pressure vs. Time (Run: %f)" % runNum )
+plt.xlabel("Pressure (mbar)")
+plt.xlabel("Counts (s)")
 
 
 
