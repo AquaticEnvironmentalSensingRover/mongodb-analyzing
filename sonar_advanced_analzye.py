@@ -1,8 +1,12 @@
+# 160802 PTAG Example Sonar analysis
+# 160802 RG Minor edits
+#
+
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
 from pymongo import MongoClient
 import time
-import lib.time_util
+import lib.time_util as TimeUtil
 from matplotlib.dates import DateFormatter
 
 from sonar_manual_data import *        

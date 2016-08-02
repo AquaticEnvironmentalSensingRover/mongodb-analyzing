@@ -29,7 +29,7 @@ mongo = MongoClient( ) # local
 # Epoch times for start and stop
 
 # Run004
-runNum = 5.3
+runNum = 5.2
 
 if(runNum==4) :
     tStartRun = time.mktime( datetime.datetime(2016, 7, 16, 18, 40).timetuple() )
@@ -45,7 +45,8 @@ elif( (runNum>=5) & (runNum<6) ) :
 
 
 # Used to format the date/time axis
-formatter = DateFormatter('%H:%M:%S')
+# formatter = DateFormatter('%H:%M:%S')
+formatter = DateFormatter('%H:%M')
 
 
 
@@ -77,7 +78,7 @@ gpsTime = np.array( gpsTime )
 
                 
 # Plot GPS data
-plt.title("GPS (Run: %d)" % runNum  )
+plt.title("GPS (Run: %.2f)" % runNum  )
 plt.xlabel("Longitude (deg)")
 plt.ylabel("Latitude (deg)")
 
@@ -136,6 +137,7 @@ if runNum==4 :
 
 
 # ======================PRESSURE======================
+t0 = time.time()
 
 # Start with lists
 pressrValue = []
@@ -143,7 +145,7 @@ pressrTime = []
 
 for ii in dbCol.find({"atype":"PRESR"}):
     pressrValue.append( (ii["param"])["mbar"])
-    pressrTime.append( ii["ts"] - t0)
+    pressrTime.append( ii["ts"] )
 
 # Convert the lists to Numpy ndarray for later use
 pressrValue = np.array( pressrValue )
@@ -152,13 +154,13 @@ pressrTime = np.array( pressrTime )
 plt.figure(14)
 plt.clf()
 plt.autoscale(True)
-t0 = time.time()
 plt.title("Pressure vs. Time (Run: %f)" % runNum )
 plt.ylabel("Pressure (mbar)")
 plt.xlabel("Time (s)")
 
 plt.plot(pressrTime, pressrValue, "ro")
 
+# ======================PRESSUE HISTOGRAM======================
 
 plt.figure(114); plt.clf( )
 plt.hist( pressrValue , bins = 100 )
@@ -199,7 +201,7 @@ plt.clf()
 
 plt.autoscale(True)
 t0 = time.time()
-plt.title("Temperature (Latest data: %f)" % t0 )
+plt.title("Temperature (Run data: %.2f)" % runNum )
 #plt.axis([-100, 5, 22, 26])
 plt.ylabel("Temperature (degC)")
 plt.xlabel("Time (s)")
@@ -300,15 +302,64 @@ plt.show()
 
 formatter = DateFormatter('%H:%M:%S')
 
+
 # Show all the gps data
-plt.figure(14) ; plt.clf()
-plt.plot( [ datetime.datetime.fromtimestamp(x) for x in gpsTime ], gpsLat , 'r.' )
-plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
+plt.figure(14) 
+if False :
+    plt.clf()
+    plt.plot( [ datetime.datetime.fromtimestamp(x) for x in gpsTime ], gpsLat , 'r.' )
+    plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
+    plt.title("Latitude (Latest data: %f)" % t0 )
+    plt.ylabel("Latitude")
+    plt.xlabel("Time (s)")
+else :
+    plt.close(14)
 
 
 # Show  the gps data within a certain time range
-plt.figure(15) ; plt.clf()
-cut = ( ( gpsTime >= tStartRun ) & (gpsTime <= tStopRun) ) # Make a cut
-plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (gpsTime[ cut ]) ]  , gpsLat[  cut ]  , 'r.' )
-plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
+plt.figure(15)
+if False :
+    plt.clf()
+    cut = ( ( gpsTime >= tStartRun ) & (gpsTime <= tStopRun) ) # Make a cut
+    plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (gpsTime[ cut ]) ]  , gpsLat[  cut ]  , 'r.' )
+    plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
+    plt.title("Latitude (Latest data: %f)" % t0 )
+    plt.ylabel("Latitude")
+    plt.xlabel("Time (s)")
+else :
+    plt.close(15)
 
+# Show the 1 m temperature data and the pressure depth
+plt.figure(16)
+if True :
+    plt.clf()
+    
+    plt.subplot('211')
+    plt.title("Temperature & Pressure (Run: %.2f)" % runNum )
+
+    # Temperature
+    cutTime = ( ( tempTime >= tStartRun ) & (tempTime <= tStopRun) ) # Make a cut
+
+    cut = cutTime & (tempIndex == 1) # 1 m depth data
+    plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (tempTime[ cut ]) ]  , tempValue[  cut ]  , 'r.' , markersize = 1 )
+
+    cut = cutTime & (tempIndex == 0) # Surface
+    plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (tempTime[ cut ]) ]  , tempValue[  cut ]  , 'g.' , markersize = 1 )
+
+    plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
+    plt.xlabel("Time")
+    plt.ylabel("T (degC)")
+
+    plt.subplot('212')
+    # Depth Pressure
+    cut = ( ( pressrTime >= tStartRun ) & (pressrTime <= tStopRun) ) # Make a cut
+    plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (pressrTime[ cut ]) ]  , -(pressrValue[  cut ]-1020)/100  , 'b.' , markersize = 1 )
+    plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
+    plt.xlabel("Time")
+    # plt.ylabel("P (mbar)")
+    plt.ylabel("Depth (m)")
+      
+else :
+    plt.close(16)
+
+plt.show()
