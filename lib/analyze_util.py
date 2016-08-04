@@ -82,24 +82,6 @@ def dbColSelector(mongo, dbNameStartFilter="AESR_"):
     return (mongo[db])[col]
 
 
-# Other:
-def dbColArgSelector(mongo, dbName, colName):
-    """Return a 'pymongo' 'Collection' object from the inputted values.
-
-    Args:
-        mongo (MongoClient): The 'pymongo.MongoClient' object of the MongoDB
-            server.
-        dbName (str): The database name.
-        colName (str): The collection name.
-
-    Returns:
-        Collection: The pymongo 'Collection' object based on the inputted
-            MongoClient object, database name, and collection name.
-    """
-    # Return collection object using the database and collection names
-    return (mongo[dbName])[colName]
-
-
 # SAVE:
 def setServerHost(addr, port):
     """Save inputted database and collection name into a shelve file.
