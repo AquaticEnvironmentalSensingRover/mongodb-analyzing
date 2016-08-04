@@ -156,7 +156,6 @@ def getServerHost(createMongoClient=False):
                     'port' (int): The stored server port.
                 }
     """
-
     d = shelve.open(SHELF_NAME)
     addr = d.get(SERVER_ADDR_KEY_NAME, None)
     port = d.get(SERVER_PORT_KEY_NAME, None)
@@ -206,5 +205,11 @@ def getDbCol(mongo=None):
 
 
 def getServerDbCol():
+    """Return a 'pymongo' 'Collection' object using the stored values.
+
+    The stored server address values are used to create a
+        'pymongo.MongoClient' object. This and the stored database and
+        collection values are used to make the 'pymongo' 'Collection' object.
+    """
     mongo = getServerHost(createMongoClient=True)
     return getDbCol(mongo)
