@@ -95,10 +95,11 @@ def nearestPairsFromTimes(baseVals, baseTimes, targetTimes,
             'None').
 
     Returns:
-        None: If no closest time because of empty 'baseTimes' array or all
-            values are further away then 'maximumTimeDiff'.
         list: The list of 'base values' that corrospond to 'targetTimes' using
             the 'baseTimes' list.
+            None: If no closest time because all values are further away then
+                'maximumTimeDiff'.
+            object: If a closest time value was found.
     """
     __raiseIfWrongType(baseTimes, 'baseTimes', list)
     __raiseIfWrongType(baseVals, 'baseVals', list)
