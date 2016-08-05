@@ -73,7 +73,7 @@ def nearestIndexTime(times, targetTime, maximumTimeDiff=None):
     return closeTimeIndex
 
 
-def nearestPairsFromTimes(baseVals, baseTimes, targetTimes,
+def nearestPairsFromTimes(baseTimes, baseVals, targetTimes,
                           maximumTimeDiff=None):
     """Return a list of values in baseVals that corrospond to the times lists.
 
@@ -81,13 +81,13 @@ def nearestPairsFromTimes(baseVals, baseTimes, targetTimes,
         containing the corrosponding 'base values' for the closest 'base times'
         is returned.
 
-    The 'baseVals' and 'bastTimes' have to be the same length as they are the
+    The 'bastTimes' and 'baseVals' have to be the same length as they are the
         two 1D arrays of a 2D array.
 
     Args:
-        baseVals (list): The list of data values to be returned.
         baseTimes (list): The list of numeric time values used to find the
             closest.
+        baseVals (list): The list of data values to be returned.
         targetTimes (list): The list of numeric time values used to find the
             closest 'baseVals'.
         maximumTimeDiff (None, numbers.Number): The maximum distance between
@@ -128,7 +128,7 @@ def nearestPairsFromTimes(baseVals, baseTimes, targetTimes,
     return returnVals
 
 
-def nearestPairsFromTimesDelNone(baseVals, baseTimes, targetVals, targetTimes,
+def nearestPairsFromTimesDelNone(baseTimes, baseVals, targetTimes, targetVals,
                                  maximumTimeDiff=None):
     """Return 'nearestPairsFromTimes' and other lists with removed 'None's.
 
@@ -137,32 +137,32 @@ def nearestPairsFromTimesDelNone(baseVals, baseTimes, targetVals, targetTimes,
         output are removed, then returned.
 
     Args:
-        baseVals (list): Passed.
         baseTimes (list): Passed.
-        targetVals (list): Corrosponding elements are removed.
+        baseVals (list): Passed.
         targetTimes (list): Passed. Corrosponding elements are removed.
+        targetVals (list): Corrosponding elements are removed.
         maximumTimeDiff (None, numbers.Number): Passed.
 
     Returns:
         tuple: (
             list: Return value of 'nearestPairsFromTimes()' with removed 'None'
                 values.
-            list: Inputted 'targetVals' with removed elements at the same
-                index.
             list: Inputted 'targetTimes' with removed elements at the same
+                index.
+            list: Inputted 'targetVals' with removed elements at the same
                 index.
         )
     """
-    __raiseIfWrongType(targetVals, 'targetVals', list)
     __raiseIfWrongType(targetTimes, 'targetTimes', list)
-    if not len(targetVals) == len(targetTimes):
-        raise ValueError("The 'targetVals' and 'targetTimes' lists must have"
+    __raiseIfWrongType(targetVals, 'targetVals', list)
+    if not len(targetTimes) == len(targetVals):
+        raise ValueError("The 'targetTimes' and 'targetVals' lists must have"
                          " the same length")
 
-    returnVals = nearestPairsFromTimes(baseVals, baseTimes, targetTimes,
+    returnVals = nearestPairsFromTimes(baseTimes, baseVals, targetTimes,
                                        maximumTimeDiff)
 
-    returnArrays = (returnVals, targetVals, targetTimes)
+    returnArrays = (returnVals, targetTimes, targetVals)
 
     for ii in reversed(range(len(returnVals))):
         if returnVals[ii] is None:
