@@ -126,3 +126,47 @@ def nearestPairsFromTimes(baseVals, baseTimes, targetTimes,
         returnVals.append(newVal)
 
     return returnVals
+
+
+def nearestPairsFromTimesDelNone(baseVals, baseTimes, targetVals, targetTimes,
+                                 maximumTimeDiff=None):
+    """Return 'nearestPairsFromTimes' and other lists with removed 'None's.
+
+    If a 'None' appears in the 'nearestPairsFromTimes' list output, the same
+        indexed position in 'targetVals', 'targetTimes', and the main function
+        output are removed, then returned.
+
+    Args:
+        baseVals (list): Passed.
+        baseTimes (list): Passed.
+        targetVals (list): Corrosponding elements are removed.
+        targetTimes (list): Passed. Corrosponding elements are removed.
+        maximumTimeDiff (None, numbers.Number): Passed.
+
+    Returns:
+        tuple: (
+            list: Return value of 'nearestPairsFromTimes()' with removed 'None'
+                values.
+            list: Inputted 'targetVals' with removed elements at the same
+                index.
+            list: Inputted 'targetTimes' with removed elements at the same
+                index.
+        )
+    """
+    __raiseIfWrongType(targetVals, 'targetVals', list)
+    __raiseIfWrongType(targetTimes, 'targetTimes', list)
+    if not len(targetVals) == len(targetTimes):
+        raise ValueError("The 'targetVals' and 'targetTimes' lists must have"
+                         " the same length")
+
+    returnVals = nearestPairsFromTimes(baseVals, baseTimes, targetTimes,
+                                       maximumTimeDiff)
+
+    returnArrays = (returnVals, targetVals, targetTimes)
+
+    for ii in reversed(range(len(returnVals))):
+        if returnVals[ii] is None:
+            for delList in returnArrays:
+                del delList[ii]
+
+    return returnArrays
