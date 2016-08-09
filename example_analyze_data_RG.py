@@ -16,6 +16,7 @@ import time
 import datetime
 from matplotlib.dates import DateFormatter
 
+
 # PICK SERVER OR USE PRESET
 #mongo = MongoClient(host=au.serverAddressSelector())
 mongo = MongoClient( ) # local
@@ -363,3 +364,35 @@ else :
     plt.close(16)
 
 plt.show()
+
+
+
+# Using - nearestPairsFromTimes(baseTimes, baseVals, targetTime , maximumTimeDiff=None):
+# Show the 1 m temperature data and the pressure depth
+plt.figure(17)
+if True :
+    plt.clf()
+    
+    plt.title("Temperature & Pressure (Run: %.2f)" % runNum )
+
+    # Temperature
+    #cutTime = ( ( tempTime >= tStartRun ) & (tempTime <= tStopRun) ) # Make a cut
+
+    #cut = cutTime & (tempIndex == 1) # 1 m depth data
+    #plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (tempTime[ cut ]) ]  , , 'r.' , markersize = 1 )
+
+    # Depth Pressure
+    cut = ( ( pressrTime >= tStartRun ) & (pressrTime <= tStopRun) ) # Make a cut
+    tt = pressrTime[ cut ]
+    d =  -(pressrValue[  cut ]-1020)/100
+    temp = au.nearestPairsFromTimes( tempTime.tolist() , tempValue.tolist() , tt.tolist() , 3 )
+    plt.plot(  temp  , d  , 'b.' , markersize = 1 )
+
+    plt.ylabel("Depth (m)")
+    plt.xlabel("T (degC)")
+      
+else :
+    plt.close(16)
+
+plt.show()
+

@@ -1,5 +1,9 @@
+# gps_tools.py
 # 
-# 160802 RG Add time pairing method
+# 160802 RG Started adding time pairing method, but Luc has provided new routine
+#
+#
+
 def nearestLocationFromTime(gpsData, time, timeTag = "ts"):
     minimumTimeData = None
     for ii in gpsData:
@@ -17,17 +21,18 @@ def nearestLocationFromTime(gpsData, time, timeTag = "ts"):
 # Data has to be closer than minTime to be paired
 # 160802 RG
 #
-def pairDataFromTime(time1, value1 , time2 , value2 , minTime):
-    value1out = [] ; value2out = []
+#def pairDataFromTime(time1, value1 , time2 , value2 , minTime):
+#    value1out = [] ; value2out = []
 
-    for (i1,t1) in enumerate(time1):
-        minPairTime = abs( time2[0] - t1 )
-        minPairIndex = abs( time2[0] - t1 )
+#    for (i1,t1) in enumerate(time1):
+#       minPairTime = abs( time2[0] - t1 )
+#        minPairIndex = abs( time2[0] - t1 )
         
-        for t2 in time2:
-            if abs( t2-t1 ) < minTimePair:
-                minimumTimeData = ii
-        else:
-            minimumTimeData = ii
+#        for t2 in time2:
+#            if abs( t2-t1 ) < minTimePair:
+#                minimumTimeData = ii
+#        else:
+#            minimumTimeData = ii
         
-    return ( timeOut . value1Out , value2Out )
+#    return ( timeOut . value1Out , value2Out )
+
