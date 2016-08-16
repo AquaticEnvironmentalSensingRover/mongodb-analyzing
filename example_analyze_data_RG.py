@@ -16,6 +16,11 @@ import time
 import datetime
 from matplotlib.dates import DateFormatter
 
+# For multiple y-axes
+# http://matplotlib.org/examples/axes_grid/demo_parasite_axes2.html
+from mpl_toolkits.axes_grid1 import host_subplot 
+import mpl_toolkits.axisartist as AA 
+import matplotlib.pyplot as plt
 
 # PICK SERVER OR USE PRESET
 #mongo = MongoClient(host=au.serverAddressSelector())
@@ -167,7 +172,7 @@ plt.figure(114); plt.clf( )
 plt.hist( pressrValue , bins = 100 )
 plt.title("Pressure vs. Time (Run: %f)" % runNum )
 plt.xlabel("Pressure (mbar)")
-plt.xlabel("Counts (s)")
+plt.ylabel("Counts (s)")
 
 
 
@@ -367,9 +372,101 @@ plt.show()
 
 
 
+# Show the 1 m temperature data and the pressure depth on same graph
+ff = 17
+
+plt.figure(ff)
+if True :
+    plt.clf()
+    
+    # http://matplotlib.org/examples/axes_grid/demo_parasite_axes2.html
+    host = host_subplot(111, axes_class=AA.Axes)
+    plt.subplots_adjust(right=0.75)
+
+# y-axis on right
+    par1 = host.twinx()
+
+# If we need a third y-axis
+#    par2 = host.twinx()
+
+#    offset = 60
+#    new_fixed_axis = par2.get_grid_helper().new_fixed_axis
+#    par2.axis["right"] = new_fixed_axis(loc="right",
+#                                        axes=par2,
+#                                        offset=(offset, 0))
+
+#    par2.axis["right"].toggle(all=True)
+
+    plt.title("Temperature & Pressure (Run: %.2f)" % runNum )
+
+#    host.set_xlim(0, 2)
+#    host.set_ylim(0, 2)
+
+    host.set_xlabel("Time")
+    host.set_ylabel("Temperature")
+    par1.set_ylabel("Depth")
+#    par2.set_ylabel("Velocity")
+
+#    par1.set_ylim(0, 4)
+#    par2.set_ylim(1, 65)
+
+    # Temperature
+    cutTime = ( ( tempTime >= tStartRun ) & (tempTime <= tStopRun) ) # Make a cut
+
+    cut = cutTime & (tempIndex == 1) # 1 m depth data
+    plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (tempTime[ cut ]) ]  , tempValue[  cut ]  , 'r.' , markersize = 1 )
+
+    p1, = host.plot( 
+        [ datetime.datetime.fromtimestamp(x) for x in (tempTime[ cut ]) ]  
+        , tempValue[  cut ] 
+        , label="T (degC)"
+        )
+
+#    p3, = par2.plot([0, 1, 2], [50, 30, 15], label="Velocity")
+
+
+#    cut = cutTime & (tempIndex == 0) # Surface
+#    plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (tempTime[ cut ]) ]  , tempValue[  cut ]  , 'g.' , markersize = 1 )
+
+
+    # Depth Pressure
+    cut = ( ( pressrTime >= tStartRun ) & (pressrTime <= tStopRun) ) # Make a cut
+    p2, = par1.plot( 
+        [ datetime.datetime.fromtimestamp(x) for x in (pressrTime[ cut ]) ]  
+        , -(pressrValue[  cut ]-1020)/100 
+        , label="Depth (m)"
+        )
+#    plt.plot(  [ datetime.datetime.fromtimestamp(x) for x in (pressrTime[ cut ]) ]  , -(pressrValue[  cut ]-1020)/100  , 'b.' , markersize = 1 )
+#    plt.ylabel("Depth (m)")
+
+    #plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
+    
+    plt.gcf().axes[0].xaxis.set_major_formatter(formatter)
+    plt.xlabel("Time")
+    plt.ylabel("T (degC)")
+    
+    host.legend()
+
+    host.axis["left"].label.set_color(p1.get_color())
+    par1.axis["right"].label.set_color(p2.get_color())
+#    par2.axis["right"].label.set_color(p3.get_color())
+      
+else :
+    plt.close(ff)
+
+plt.draw()
+plt.show()
+
+#plt.savefig("Test")
+
+
+
+
+
 # Using - nearestPairsFromTimes(baseTimes, baseVals, targetTime , maximumTimeDiff=None):
 # Show the 1 m temperature data and the pressure depth
-plt.figure(17)
+ff = 18
+plt.figure(ff)
 if True :
     plt.clf()
     
@@ -385,14 +482,16 @@ if True :
     cut = ( ( pressrTime >= tStartRun ) & (pressrTime <= tStopRun) ) # Make a cut
     tt = pressrTime[ cut ]
     d =  -(pressrValue[  cut ]-1020)/100
-    temp = au.nearestPairsFromTimes( tempTime.tolist() , tempValue.tolist() , tt.tolist() , 3 )
-    plt.plot(  temp  , d  , 'b.' , markersize = 1 )
+
+    cut = (tempIndex == 1) # 1 m depth data
+    temp = au.nearestPairsFromTimes( tempTime[cut].tolist() , tempValue[cut].tolist() , tt.tolist() , 3 )
+    plt.plot(  temp  , d  , 'b.' , markersize = 3 )
 
     plt.ylabel("Depth (m)")
     plt.xlabel("T (degC)")
       
 else :
-    plt.close(16)
+    plt.close(ff)
 
 plt.show()
 
