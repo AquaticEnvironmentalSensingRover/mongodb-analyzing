@@ -1,13 +1,15 @@
 """Contain methods useful when analyzing data."""
 from pymongo import MongoClient
 import shelve
+import os
+
 
 DEFAULTS = {"server": ["localhost", "10.0.2.197", "192.168.42.50"]}
 DB_KEY_NAME = 'DB'
 COL_KEY_NAME = 'COL'
 SERVER_ADDR_KEY_NAME = 'ADDR'
 SERVER_PORT_KEY_NAME = 'PORT'
-SHELF_NAME = 'dbCol.shelf'
+SHELF_FILE = os.path.dirname(os.path.abspath(__file__)) + '/dbCol.shelf'
 
 
 # Input selectors:
@@ -113,7 +115,7 @@ def setServerHost(addr, port):
     if not isinstance(port, int):
         raise ValueError("The 'port' value is not an int")
 
-    d = shelve.open(SHELF_NAME)
+    d = shelve.open(SHELF_FILE)
     d[SERVER_ADDR_KEY_NAME] = addr
     d[SERVER_PORT_KEY_NAME] = port
     d.close()
@@ -131,7 +133,7 @@ def setDbCol(db, col):
     if not isinstance(col, str):
         raise ValueError("The 'col' value is not a string")
 
-    d = shelve.open(SHELF_NAME)
+    d = shelve.open(SHELF_FILE)
     d[DB_KEY_NAME] = db
     d[COL_KEY_NAME] = col
     d.close()
@@ -156,7 +158,7 @@ def getServerHost(createMongoClient=False):
                     'port' (int): The stored server port.
                 }
     """
-    d = shelve.open(SHELF_NAME)
+    d = shelve.open(SHELF_FILE)
     addr = d.get(SERVER_ADDR_KEY_NAME, None)
     port = d.get(SERVER_PORT_KEY_NAME, None)
 
@@ -190,7 +192,7 @@ def getDbCol(mongo=None):
                 }
 
     """
-    d = shelve.open(SHELF_NAME)
+    d = shelve.open(SHELF_FILE)
     db = d.get(DB_KEY_NAME, None)
     col = d.get(COL_KEY_NAME, None)
 
