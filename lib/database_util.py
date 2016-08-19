@@ -25,8 +25,8 @@ def serverAddressSelector():
     Returns:
         str: The selected server address.
     """
-    print("\nUse index number of IP address\nDefault server IP Addresses:\n"
-          + str(DEFAULTS["server"]))
+    print("\n Use IP address or:\n\nUse index number of IP address in:"
+          "\nDefault server IP Addresses:\n" + str(DEFAULTS["server"]))
     ipAddress = raw_input("Server IP Address: ")
 
     try:
@@ -66,7 +66,7 @@ def dbColSelector(mongo, dbNameStartFilter="AESR_"):
 
     # Print filtered list of databases
     print("\nDatabases (newest -> oldest based on name):\n" + str(dbNames))
-    dbInput = raw_input("DB Name (Index number of IP address): ")
+    dbInput = raw_input("DB Name (Index number of DB or name): ")
 
     # Treat input as integer for an index,
     # but if something goes wrong, use the input as the database name
@@ -110,7 +110,7 @@ def setServerHost(addr, port):
         addr (str): The server address.
         port (int): The server port.
     """
-    if not isinstance(addr, str):
+    if not isinstance(addr, basestring):
         raise ValueError("The 'addr' value is not a string")
     if not isinstance(port, int):
         raise ValueError("The 'port' value is not an int")
@@ -128,9 +128,9 @@ def setDbCol(db, col):
         db (str): The database name.
         col (str): The collection name.
     """
-    if not isinstance(db, str):
+    if not isinstance(db, basestring):
         raise ValueError("The 'db' value is not a string")
-    if not isinstance(col, str):
+    if not isinstance(col, basestring):
         raise ValueError("The 'col' value is not a string")
 
     d = shelve.open(SHELF_FILE)
