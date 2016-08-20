@@ -17,9 +17,9 @@ except ValueError:
     pass
 
 #   Server port setting:
-print("\nUse IP address or:\nKeep blank for default:\n"
-      + str(DEFAULTS["SERVER_PORT"]))
-ipPort = raw_input("Server port: ")
+ipPort = raw_input("\nServer port (Leave blank for {}): "
+                   .format(str(DEFAULTS["SERVER_PORT"])))
+
 if ipPort == "":
     ipPort = DEFAULTS["SERVER_PORT"]
 ipPort = int(ipPort)
