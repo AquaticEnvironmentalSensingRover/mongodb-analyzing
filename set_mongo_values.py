@@ -37,7 +37,9 @@ def __num(s):
 #   Preset DbCol:
 runNum = raw_input("\nRun number (Leave blank for none): ")
 
+manualEntry = True
 if not runNum == '':
+    manualEntry = False
     runNum = __num(runNum)
     col = 'data'
 
@@ -50,11 +52,13 @@ if not runNum == '':
     elif runNum == 5.3:
         db = 'AESR_20160717T193309'
     else:
-        raise ValueError("The inputted run number doesn't exist")
-#   Text input DbCol:
+        print "\nThe inputted run number doesn't exist"
+        manualEntry = True
 else:
     runNum = None
 
+#   Text input DbCol:
+if manualEntry:
     rawDbNames = sorted(mongo.database_names(), reverse=True)
 
     # Print databases filtering with the supplied argument
