@@ -1,5 +1,6 @@
 """Contain methods useful when analyzing data."""
 from pymongo import MongoClient
+import numbers
 import shelve
 import os
 
@@ -7,6 +8,7 @@ import os
 DEFAULTS = {"server": ["localhost", "10.0.2.197", "192.168.42.50"]}
 DB_KEY_NAME = 'DB'
 COL_KEY_NAME = 'COL'
+RUN_NUM_KEY_NAME = 'RUN_NUM'
 SERVER_ADDR_KEY_NAME = 'ADDR'
 SERVER_PORT_KEY_NAME = 'PORT'
 SHELF_FILE = os.path.dirname(os.path.abspath(__file__)) + '/dbCol.shelf'
@@ -143,6 +145,29 @@ def setDbCol(db, col):
         d.close()
 
 
+def setRunNumber(runNum):
+    """Save inputted run number into a shelve file.
+
+    If inputted 'runNum' is 'None', then it is removed from the shelf.
+
+    Args:
+        runNum (numbers.Number): The run number or 'None'.
+    """
+    try:
+        d = shelve.open(SHELF_FILE)
+
+        if runNum is None:
+            del d[RUN_NUM_KEY_NAME]
+        else:
+            if not isinstance(runNum, numbers.Number):
+                raise ValueError("The 'runNum' value is not a number "
+                                 "(or None)")
+
+            d[RUN_NUM_KEY_NAME] = runNum
+    finally:
+        d.close()
+
+
 # GET:
 def getServerHost(createMongoClient=False):
     """Return address and port of the server saved in the shelve file.
@@ -225,3 +250,18 @@ def getServerDbCol():
     """
     mongo = getServerHost(createMongoClient=True)
     return getDbCol(mongo)
+
+
+def getRunNumber():
+    """Return the stored 'run number'."""
+    try:
+        d = shelve.open(SHELF_FILE)
+        runNum = d.get(RUN_NUM_KEY_NAME, None)
+    finally:
+        d.close()
+
+    if runNum is None:
+        raise ValueError("Please use the 'setRunNumber' function, to set the"
+                         "'runNum' values")
+
+    return runNum
