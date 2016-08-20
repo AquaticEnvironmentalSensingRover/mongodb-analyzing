@@ -115,10 +115,12 @@ def setServerHost(addr, port):
     if not isinstance(port, int):
         raise ValueError("The 'port' value is not an int")
 
-    d = shelve.open(SHELF_FILE)
-    d[SERVER_ADDR_KEY_NAME] = addr
-    d[SERVER_PORT_KEY_NAME] = port
-    d.close()
+    try:
+        d = shelve.open(SHELF_FILE)
+        d[SERVER_ADDR_KEY_NAME] = addr
+        d[SERVER_PORT_KEY_NAME] = port
+    finally:
+        d.close()
 
 
 def setDbCol(db, col):
@@ -133,10 +135,12 @@ def setDbCol(db, col):
     if not isinstance(col, basestring):
         raise ValueError("The 'col' value is not a string")
 
-    d = shelve.open(SHELF_FILE)
-    d[DB_KEY_NAME] = db
-    d[COL_KEY_NAME] = col
-    d.close()
+    try:
+        d = shelve.open(SHELF_FILE)
+        d[DB_KEY_NAME] = db
+        d[COL_KEY_NAME] = col
+    finally:
+        d.close()
 
 
 # GET:
@@ -158,9 +162,12 @@ def getServerHost(createMongoClient=False):
                     'port' (int): The stored server port.
                 }
     """
-    d = shelve.open(SHELF_FILE)
-    addr = d.get(SERVER_ADDR_KEY_NAME, None)
-    port = d.get(SERVER_PORT_KEY_NAME, None)
+    try:
+        d = shelve.open(SHELF_FILE)
+        addr = d.get(SERVER_ADDR_KEY_NAME, None)
+        port = d.get(SERVER_PORT_KEY_NAME, None)
+    finally:
+        d.close()
 
     if addr is None or port is None:
         raise ValueError("Please use the 'saveDbCol' function, to set \
@@ -192,9 +199,12 @@ def getDbCol(mongo=None):
                 }
 
     """
-    d = shelve.open(SHELF_FILE)
-    db = d.get(DB_KEY_NAME, None)
-    col = d.get(COL_KEY_NAME, None)
+    try:
+        d = shelve.open(SHELF_FILE)
+        db = d.get(DB_KEY_NAME, None)
+        col = d.get(COL_KEY_NAME, None)
+    finally:
+        d.close()
 
     if db is None or col is None:
         raise ValueError("Please use the 'saveDbCol' function, to set the 'db' \
