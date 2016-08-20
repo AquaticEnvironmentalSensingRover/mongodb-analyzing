@@ -26,31 +26,60 @@ ipPort = int(ipPort)
 
 # DbCol setting ==============================================================:
 mongo = MongoClient(ipAddress, ipPort)
-rawDbNames = sorted(mongo.database_names(), reverse=True)
 
-# Print databases filtering with the supplied argument
-# NOTE: Using enumerate() didn't pickup "local" in "rawDbNames"
-dbNames = []
-for ii in range(len(rawDbNames)):
-    dbName = rawDbNames[ii]
-    if dbName.startswith(DB_START_FILTER):
-        dbNames.append(dbName)
 
-# Print filtered list of databases
-print("\nDatabases (newest -> oldest based on name):\n" + str(dbNames))
-db = raw_input("DB Name (Index number of DB or name): ")
+def __num(s):
+    try:
+        return int(s)
+    except ValueError:
+        return float(s)
 
-# Treat input as integer for an index,
-# but if something goes wrong, use the input as the database name
-try:
-    db = (dbNames)[int(db)]
-except ValueError:
-    pass
-print "SELECTED Database: " + db
+#   Preset DbCol:
+runNum = raw_input("\nRun number (Leave blank for none): ")
 
-# Print collection names in the given database
-print("\nCollections:\n" + str(sorted(mongo[db].collection_names())))
-col = raw_input("Col Name: ")
+if not runNum == '':
+    runNum = __num(runNum)
+    col = 'data'
+
+    if runNum == 4:
+        db = 'AESR_20160716T184018'
+    elif runNum == 5.1:
+        db = 'AESR_20160717T154442'
+    elif runNum == 5.2:
+        db = 'AESR_20160717T165349'
+    elif runNum == 5.3:
+        db = 'AESR_20160717T193309'
+    else:
+        raise ValueError("The inputted run number doesn't exist")
+#   Text input DbCol:
+else:
+    runNum = None
+
+    rawDbNames = sorted(mongo.database_names(), reverse=True)
+
+    # Print databases filtering with the supplied argument
+    # NOTE: Using enumerate() didn't pickup "local" in "rawDbNames"
+    dbNames = []
+    for ii in range(len(rawDbNames)):
+        dbName = rawDbNames[ii]
+        if dbName.startswith(DB_START_FILTER):
+            dbNames.append(dbName)
+
+    # Print filtered list of databases
+    print("\nDatabases (newest -> oldest based on name):\n" + str(dbNames))
+    db = raw_input("DB Name (Index number of DB or name): ")
+
+    # Treat input as integer for an index,
+    # but if something goes wrong, use the input as the database name
+    try:
+        db = (dbNames)[int(db)]
+        print db
+    except ValueError:
+        pass
+
+    # Print collection names in the given database
+    print("\nCollections:\n" + str(sorted(mongo[db].collection_names())))
+    col = raw_input("Col Name: ")
 
 
 # Value writing
