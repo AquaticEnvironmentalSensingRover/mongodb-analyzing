@@ -87,5 +87,13 @@ if manualEntry:
 
 
 # Value writing
+print "\nSELECTED Server address: " + ipAddress
+print "SELECTED Server port: " + str(ipPort)
 du.setServerHost(ipAddress, ipPort)
+
+print "\nSELECTED Database: " + db
+print "SELECTED Collection: " + col
 du.setDbCol(db, col)
+
+print "\nSELECTED Run number: " + str(runNum)
+du.setRunNumber(runNum)
