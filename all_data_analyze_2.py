@@ -104,6 +104,8 @@ else:
         plt.plot([gpsLonList[j]], [gpsLatList[j]], 'b.',
                  c=str(pressureDataList[j]))
 
+plt.xlabel("Longitude (deg)")
+plt.ylabel("Latitude (deg)")
 
 # Plot minute markers
 minuteMarkTime = tStartRun
