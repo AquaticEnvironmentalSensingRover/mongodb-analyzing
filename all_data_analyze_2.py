@@ -46,7 +46,8 @@ formatter = DateFormatter('%H:%M')
 
 
 # ======================GPS======================
-plt.figure(100)
+gpsFig = plt.figure(100)
+gpsAx = plt.axes()
 plt.clf()
 # plt.subplot(221)
 
@@ -95,14 +96,31 @@ plt.autoscale(True)
 # Plot the center of the house
 # plt.plot(-71.343310, 41.739910, 'rd')
 
+points_with_annotation = []
 # Normal plotting:
 normalPlot = False
 if normalPlot:
     plt.plot(gpsLonList, gpsLatList, 'b.')
 else:
     for j in range(len(gpsLonList)):
-        plt.plot([gpsLonList[j]], [gpsLatList[j]], 'b.',
-                 c=str(pressureDataList[j]))
+        x = [gpsLonList[j]]
+        y = [gpsLatList[j]]
+        z = pressureDataList[j]
+        point, = plt.plot(x, y, 'b.', c=str(z))
+
+        annotation = gpsAx.annotate("X: {}, Y: {}, Z: {}".format(x, y, z),
+                                    xy=(x, y), xycoords='data',
+                                    xytext=(x, y), textcoords='data',
+                                    horizontalalignment="left",
+                                    arrowprops=dict(arrowstyle="simple",
+                                                    connectionstyle="arc3,r"
+                                                                    "ad=-0.2"),
+                                    bbox=dict(boxstyle="round", facecolor="w",
+                                              edgecolor="0.5", alpha=0.9)
+                                    )
+
+        annotation.set_visible(False)
+        points_with_annotation.append([point, annotation])
 
 plt.xlabel("Longitude (deg)")
 plt.ylabel("Latitude (deg)")
@@ -123,6 +141,22 @@ gpsVals, minuteMarkTimes = au.nearestPairsFromTimesDelNone(gpsTimeList,
 if not len(gpsVals) == 0:
     plt.plot(*zip(*gpsVals), color='r', linestyle='None', marker='+',
              markersize=10)
+
+
+def __on_move(event):
+    visibility_changed = False
+    for point, annotation in points_with_annotation:
+        should_be_visible = (point.contains(event)[0] is True)
+
+        if should_be_visible != annotation.get_visible():
+            visibility_changed = True
+            annotation.set_visible(should_be_visible)
+
+    if visibility_changed:
+        plt.draw()
+
+on_move_id = gpsFig.canvas.mpl_connect('motion_notify_event', __on_move)
+
 
 # Disable autoscaling to stop images from affecting scale
 plt.autoscale(False)
