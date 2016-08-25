@@ -128,8 +128,8 @@ def nearestPairsFromTimes(baseTimes, baseVals, targetTimes,
     return returnVals
 
 
-def nearestPairsFromTimesDelNone(baseTimes, baseVals, targetTimes, targetVals,
-                                 maximumTimeDiff=None):
+def nearestPairsFromTimesDelNone(baseTimes, baseVals, targetTimes,
+                                 targetVals=None, maximumTimeDiff=None):
     """Return 'nearestPairsFromTimes' and other lists with removed 'None's.
 
     If a 'None' appears in the 'nearestPairsFromTimes' list output, the same
@@ -140,7 +140,8 @@ def nearestPairsFromTimesDelNone(baseTimes, baseVals, targetTimes, targetVals,
         baseTimes (list): Passed.
         baseVals (list): Passed.
         targetTimes (list): Passed. Corrosponding elements are removed.
-        targetVals (list): Corrosponding elements are removed.
+        targetVals (list): Corrosponding elements are removed [optional]
+            (defaults to 'None').
         maximumTimeDiff (None, numbers.Number): Passed.
 
     Returns:
@@ -150,19 +151,23 @@ def nearestPairsFromTimesDelNone(baseTimes, baseVals, targetTimes, targetVals,
             list: Inputted 'targetTimes' with removed elements at the same
                 index.
             list: Inputted 'targetVals' with removed elements at the same
-                index.
+                index [Not returned if targetVals is 'None'].
         )
     """
     __raiseIfWrongType(targetTimes, 'targetTimes', list)
-    __raiseIfWrongType(targetVals, 'targetVals', list)
-    if not len(targetTimes) == len(targetVals):
-        raise ValueError("The 'targetTimes' and 'targetVals' lists must have"
-                         " the same length")
+    if targetVals is not None:
+        __raiseIfWrongType(targetVals, 'targetVals', list)
+        if not len(targetTimes) == len(targetVals):
+            raise ValueError("The 'targetTimes' and 'targetVals' lists must "
+                             "have the same length")
 
     returnVals = nearestPairsFromTimes(baseTimes, baseVals, targetTimes,
                                        maximumTimeDiff)
 
-    returnArrays = (returnVals, targetTimes, targetVals)
+    returnArrays = [returnVals, targetTimes]
+    if targetVals is not None:
+        returnArrays.append(targetVals)
+    returnArrays = tuple(returnArrays)
 
     for ii in reversed(range(len(returnVals))):
         if returnVals[ii] is None:
