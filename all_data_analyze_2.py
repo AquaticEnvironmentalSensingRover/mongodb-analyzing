@@ -71,6 +71,18 @@ gpsLon = np.array(gpsLonList)   # now convert to ndarray for later analysis
 gpsLat = np.array(gpsLatList)
 gpsTime = np.array(gpsTimeList)
 
+# Get pressure data:
+pressureDataList = []
+for ii in dbCol.find({"atype": "PRESR"}):
+    pressureDataList.append(ii['param']['mbar'])
+
+maxPressure = max(pressureDataList)
+
+minPressure = min(pressureDataList)
+
+for i in range(len(pressureDataList)):
+    pressureDataList[i] = 1 - ((pressureDataList[i] - minPressure) /
+                               (maxPressure - minPressure))
 
 # Plot GPS data
 plt.title("GPS (Run: %.2f)" % runNum)
@@ -83,7 +95,14 @@ plt.autoscale(True)
 # Plot the center of the house
 # plt.plot(-71.343310, 41.739910, 'rd')
 
-plt.plot(gpsLonList, gpsLatList, 'b.')
+# Normal plotting:
+normalPlot = False
+if normalPlot:
+    plt.plot(gpsLonList, gpsLatList, 'b.')
+else:
+    for j in range(len(gpsLonList)):
+        plt.plot([gpsLonList[j]], [gpsLatList[j]], 'b.',
+                 c=str(pressureDataList[j]))
 
 
 # Plot minute markers
