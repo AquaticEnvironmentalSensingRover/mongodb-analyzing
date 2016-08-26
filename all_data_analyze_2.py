@@ -6,6 +6,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import lib.analyze_util as au
 import lib.database_util as du
 from scipy.misc import imread
@@ -94,9 +95,6 @@ maxPressure = max(newPressureDataList)
 
 minPressure = min(newPressureDataList)
 
-for i in range(len(newPressureDataList)):
-    newPressureDataList[i] = 1 - ((newPressureDataList[i] - minPressure) /
-                                  (maxPressure - minPressure))
 
 # Plot GPS data
 plt.title("GPS (Run: %.2f)" % runNum)
@@ -112,11 +110,14 @@ plt.autoscale(True)
 # Normal plotting:
 normalPlot = False
 if normalPlot:
-    plt.plot(gpsLonList, gpsLatList, 'b.')
+    plt.scatter(gpsLonList, gpsLatList, c='b', marker='.', edgecolors='face')
 else:
-    for j in range(len(newGpsLonList)):
-        plt.plot([newGpsLonList[j]], [newGpsLatList[j]], 'b.',
-                 c=str(newPressureDataList[j]))
+    plt.scatter(newGpsLonList, newGpsLatList, c=newPressureDataList,
+                marker='.', cmap=cm.jet_r, edgecolors='face')
+    gpsPressureColorBar = plt.colorbar()
+    gpsPressureColorBar.ax.invert_yaxis()
+    gpsPressureColorBar.ax.set_ylabel('Pressure (mbar)', rotation=270,
+                                      labelpad=20)
 
 plt.xlabel("Longitude (deg)")
 plt.ylabel("Latitude (deg)")
