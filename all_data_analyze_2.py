@@ -73,16 +73,30 @@ gpsTime = np.array(gpsTimeList)
 
 # Get pressure data:
 pressureDataList = []
+pressureTimeList = []
 for ii in dbCol.find({"atype": "PRESR"}):
     pressureDataList.append(ii['param']['mbar'])
+    pressureTimeList.append(ii['ts'])
 
-maxPressure = max(pressureDataList)
 
-minPressure = min(pressureDataList)
+newGpsData, newPressureTimeList, newPressureDataList = \
+                                            au.nearestPairsFromTimesDelNone(
+                                                gpsTimeList,
+                                                zip(gpsLonList, gpsLatList),
+                                                pressureTimeList,
+                                                pressureDataList,
+                                                maximumTimeDiff=None
+                                            )
 
-for i in range(len(pressureDataList)):
-    pressureDataList[i] = 1 - ((pressureDataList[i] - minPressure) /
-                               (maxPressure - minPressure))
+newGpsLonList, newGpsLatList = zip(*newGpsData)
+
+maxPressure = max(newPressureDataList)
+
+minPressure = min(newPressureDataList)
+
+for i in range(len(newPressureDataList)):
+    newPressureDataList[i] = 1 - ((newPressureDataList[i] - minPressure) /
+                                  (maxPressure - minPressure))
 
 # Plot GPS data
 plt.title("GPS (Run: %.2f)" % runNum)
@@ -100,9 +114,9 @@ normalPlot = False
 if normalPlot:
     plt.plot(gpsLonList, gpsLatList, 'b.')
 else:
-    for j in range(len(gpsLonList)):
-        plt.plot([gpsLonList[j]], [gpsLatList[j]], 'b.',
-                 c=str(pressureDataList[j]))
+    for j in range(len(newGpsLonList)):
+        plt.plot([newGpsLonList[j]], [newGpsLatList[j]], 'b.',
+                 c=str(newPressureDataList[j]))
 
 plt.xlabel("Longitude (deg)")
 plt.ylabel("Latitude (deg)")
