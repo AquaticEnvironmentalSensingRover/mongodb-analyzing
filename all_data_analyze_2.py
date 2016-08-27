@@ -73,6 +73,18 @@ for ii in dbCol.find({"atype": "PRESR"}):
 pressureTime = np.asarray(pressureTimeList)
 pressureData = np.asarray(pressureDataList)
 
+# ======================TEMP=====================:
+# Get temperaturer data:
+
+temperatureTimeList = []
+temperatureDataList = []
+for ii in dbCol.find({"atype": "TEMP"}):
+    temperatureTimeList.append(ii['ts'])
+    temperatureDataList.append(ii['param'])
+
+temperatureTime = np.asarray(temperatureTimeList)
+temperatureData = np.asarray(temperatureDataList)
+
 
 # ===========================PLOTTING FUNCTIONS===============================:
 def gpsDataPlot(times, data, cmap=cm.jet, colorBarLabel=None,
@@ -180,7 +192,13 @@ plt.clf()
 
 gpsDataPlot(pressureTime, pressureData, cmap=cm.jet_r,
             colorBarLabel='Pressure (mbar)', invertColorBar=True)
+# =======================TEMP======================:
+# Temperature GPS plot:
+plt.figure(200)
+plt.clf()
 
+gpsDataPlot(temperatureTime, temperatureData,
+            colorBarLabel='Temperature (degC)', cmap=cm.jet)
 
 # PLOT:
 plt.show()
