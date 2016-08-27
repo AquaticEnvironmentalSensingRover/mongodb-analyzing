@@ -137,8 +137,8 @@ gpsVals, timeMarkTimes = au.nearestPairsFromTimesDelNone(gpsTimeList,
                                                          maximumTimeDiff=10)
 
 if not len(gpsVals) == 0:
-    plt.plot(*zip(*gpsVals), color='r', linestyle='None', marker='+',
-             markersize=10)
+    plt.scatter(*zip(*gpsVals), c=range(len(gpsVals)), marker='+', s=100,
+                cmap=cm.seismic)
 
 # Disable autoscaling to stop images from affecting scale
 plt.autoscale(False)
