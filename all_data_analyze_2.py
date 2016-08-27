@@ -122,19 +122,19 @@ else:
 plt.xlabel("Longitude (deg)")
 plt.ylabel("Latitude (deg)")
 
-# Plot minute markers
-minuteMarkInterval = 30  # Seconds
-minuteMarkTime = tStartRun
-minuteMarkTimes = []
-while minuteMarkTime < tStopRun:
-    minuteMarkTimes.append(minuteMarkTime)
-    minuteMarkTime += minuteMarkInterval  # seconds
+# Plot time markers
+timeMarkInterval = 30  # Seconds
+timeMarkTime = tStartRun
+timeMarkTimes = []
+while timeMarkTime < tStopRun:
+    timeMarkTimes.append(timeMarkTime)
+    timeMarkTime += timeMarkInterval  # seconds
 
-gpsVals, minuteMarkTimes = au.nearestPairsFromTimesDelNone(gpsTimeList,
-                                                           zip(gpsLonList,
-                                                               gpsLatList),
-                                                           minuteMarkTimes,
-                                                           maximumTimeDiff=10)
+gpsVals, timeMarkTimes = au.nearestPairsFromTimesDelNone(gpsTimeList,
+                                                         zip(gpsLonList,
+                                                             gpsLatList),
+                                                         timeMarkTimes,
+                                                         maximumTimeDiff=10)
 
 if not len(gpsVals) == 0:
     plt.plot(*zip(*gpsVals), color='r', linestyle='None', marker='+',
