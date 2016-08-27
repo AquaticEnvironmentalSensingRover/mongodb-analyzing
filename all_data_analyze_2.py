@@ -15,10 +15,6 @@ import datetime
 import math
 from matplotlib.dates import DateFormatter
 
-# For multiple y-axes
-# http://matplotlib.org/examples/axes_grid/demo_parasite_axes2.html
-from mpl_toolkits.axes_grid1 import host_subplot
-import mpl_toolkits.axisartist as AA
 
 # PICK SERVER OR USE PRESET
 mongo = du.getServerHost(True)
@@ -90,10 +86,6 @@ newGpsData, newPressureTimeList, newPressureDataList = \
                                             )
 
 newGpsLonList, newGpsLatList = zip(*newGpsData)
-
-maxPressure = max(newPressureDataList)
-
-minPressure = min(newPressureDataList)
 
 
 # Plot GPS data
