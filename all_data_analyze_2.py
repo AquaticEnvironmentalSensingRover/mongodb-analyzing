@@ -123,11 +123,12 @@ plt.xlabel("Longitude (deg)")
 plt.ylabel("Latitude (deg)")
 
 # Plot minute markers
+minuteMarkInterval = 30  # Seconds
 minuteMarkTime = tStartRun
 minuteMarkTimes = []
 while minuteMarkTime < tStopRun:
     minuteMarkTimes.append(minuteMarkTime)
-    minuteMarkTime += 60  # seconds
+    minuteMarkTime += minuteMarkInterval  # seconds
 
 gpsVals, minuteMarkTimes = au.nearestPairsFromTimesDelNone(gpsTimeList,
                                                            zip(gpsLonList,
