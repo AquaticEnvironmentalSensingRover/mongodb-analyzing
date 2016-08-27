@@ -6,10 +6,29 @@ warnings.simplefilter('once', DeprecationWarning)
 
 
 # Private:
-def __raiseIfWrongType(value, valueName, targetType):
-    if not isinstance(value, targetType):
-        raise TypeError("The '{}' value is required to be a '{}' type"
-                        .format(valueName, targetType.__name__))
+def __raiseIfWrongType(value, valueName, *targetTypes):
+    isType = False
+    for targetType in targetTypes:
+        if isinstance(value, targetType):
+            isType = True
+            break
+
+    if not isType:
+        if len(targetTypes) == 1:
+            errorMessage = ("The '{}' value is required to be a '{}' type"
+                            .format(valueName, targetTypes[0].__name__))
+        else:
+            errorMessage = ("The '{}' value is required to be a "
+                            .format(valueName))
+            for ii, targetType in enumerate(targetTypes):
+                if ii == len(targetTypes)-1:
+                    newString = "or '{}'"
+                else:
+                    newString = "'{}', "
+
+                errorMessage += newString.format(targetType)
+
+        raise TypeError(errorMessage)
 
 
 # Deprecated redirects:
