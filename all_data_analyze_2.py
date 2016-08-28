@@ -86,6 +86,18 @@ temperatureTime = np.asarray(temperatureTimeList)
 temperatureData = np.asarray(temperatureDataList)
 
 
+# ======================ODO======================:
+# Get optical dissolved oxygen data:
+odoTimeList = []
+odoDataList = []
+for ii in dbCol.find({"atype": "ODO"}):
+    odoTimeList.append(ii['ts'])
+    odoDataList.append(ii['param']['mgL'])
+
+odoTime = np.asarray(odoTimeList)
+odoData = np.asarray(odoDataList)
+
+
 # ===========================PLOTTING FUNCTIONS===============================:
 def gpsDataPlot(times, data, cmap=cm.jet, colorBarLabel=None,
                 invertColorBar=False, timeMarkInterval=30):
@@ -199,6 +211,14 @@ plt.clf()
 
 gpsDataPlot(temperatureTime, temperatureData,
             colorBarLabel='Temperature (degC)', cmap=cm.jet)
+
+# =======================ODO=======================:
+# Temperature GPS plot:
+plt.figure(300)
+plt.clf()
+
+gpsDataPlot(odoTime, odoData, colorBarLabel='Dissolved Oxygen (mgL)',
+            cmap=cm.jet)
 
 # PLOT:
 plt.show()
