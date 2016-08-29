@@ -1,4 +1,5 @@
 """Contain methods useful when analyzing data."""
+import numpy as np
 import numbers
 import database_util as du
 import warnings
@@ -31,6 +32,12 @@ def __raiseIfWrongType(value, valueName, *targetTypes):
         raise TypeError(errorMessage)
 
 
+def __convertToNPArray(value):
+    if not isinstance(value, np.ndarray):
+        value = np.asarray(value)
+    return value
+
+
 # Deprecated redirects:
 def serverAddressSelector(*args, **kwargs):
     """Return output of 'database_util.serverAddressSelector'.
@@ -60,7 +67,8 @@ def nearestIndexTime(times, targetTime, maximumTimeDiff=None):
         None is returned.
 
     Args:
-        times (list): The list of numeric time values used to find the closest.
+        times (list, numpy.array): The list of numeric time values used to find
+            the closest.
         targetTime (numbers.Number): The time value that is being used to find
             the closest value in 'times'.
         maximumTimeDiff (None, numbers.Number): The maximum distance between
@@ -72,24 +80,21 @@ def nearestIndexTime(times, targetTime, maximumTimeDiff=None):
             values are further away then 'maximumTimeDiff'.
         int: The index in the 'times' array of the closest value.
     """
-    __raiseIfWrongType(times, 'times', list)
+    __raiseIfWrongType(times, 'times', list, np.ndarray)
+    times = __convertToNPArray(times)
+
     __raiseIfWrongType(targetTime, 'targetTime', numbers.Number)
 
-    if maximumTimeDiff is not None:
-        __raiseIfWrongType(maximumTimeDiff, 'maximumTimeDiff', numbers.Number)
+    __raiseIfWrongType(maximumTimeDiff, 'maximumTimeDiff', numbers.Number,
+                       type(None))
 
-    closeTimeIndex = None
+    diffArray = np.abs(times-targetTime)
+    valueIndex = diffArray.argmin()
 
-    for ii, time in enumerate(times):
-        if (abs(time-targetTime) < maximumTimeDiff) or maximumTimeDiff is None:
-            if closeTimeIndex is not None:
-                if abs(times[closeTimeIndex]-targetTime) \
-                        > abs(time-targetTime):
-                    closeTimeIndex = ii
-            else:
-                closeTimeIndex = ii
-
-    return closeTimeIndex
+    if diffArray[valueIndex] <= maximumTimeDiff or maximumTimeDiff is None:
+        return valueIndex
+    else:
+        return None
 
 
 def nearestPairsFromTimes(baseTimes, baseVals, targetTimes,
