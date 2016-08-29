@@ -14,6 +14,7 @@ import time
 import datetime
 import math
 from matplotlib.dates import DateFormatter
+from geopy.distance import vincenty
 
 
 # PICK SERVER OR USE PRESET
@@ -192,6 +193,58 @@ def gpsDataPlot(times, data, colorBarLabel=None,
                                       41.739235])
 
 
+def gpsOverlaps(minTimeDiff=10, maxDistDiff=2):
+    checkTimes = []
+    checkData = []
+    newTimes = []
+    newData = []
+    for ii in range(len(gpsLon)):
+        checkPair = (gpsLat[ii], gpsLon[ii])
+        checkTime = gpsTime[ii]
+        for jj in range(len(gpsLon)):
+            # Future: skip up to ii
+            if jj > ii:
+                newPair = (gpsLat[jj], gpsLon[jj])
+                newTime = gpsTime[jj]
+
+                if abs(checkTime - newTime) > minTimeDiff:
+                    distance = (vincenty(checkPair, newPair).meters)
+
+                    if distance < maxDistDiff:
+                        checkTimes.append(checkTime)
+                        checkData.append(checkPair)
+                        newTimes.append(newTime)
+                        newData.append(newPair)
+
+    return (((checkTimes, checkData), (newTimes, newData)))
+
+
+def gpsOverlapDataPlot(times, data, minTimeDiff=10, maxDistDiff=2,
+                       **histKwargs):
+    gpsVals = gpsOverlaps(minTimeDiff=minTimeDiff, maxDistDiff=maxDistDiff)
+
+    returnArrays = []
+    returnArrays.append(au.nearestPairsFromTimes(times, data, gpsVals[0][0],
+                                                 gpsVals[0][1],
+                                                 maximumTimeDiff=None))
+
+    returnArrays.append(au.nearestPairsFromTimes(times, data, gpsVals[1][0],
+                                                 gpsVals[1][1],
+                                                 maximumTimeDiff=None))
+
+    plotVals = []
+    for ii in reversed(range(len(returnArrays[0][0]))):
+        vals = []
+        vals.append(returnArrays[0][0][ii])
+        vals.append(returnArrays[1][0][ii])
+
+        if vals[0] is None or vals[1] is None:
+            del returnArrays[0][0][ii]
+            del returnArrays[1][0][ii]
+        else:
+            plotVals.append(abs(vals[0]-vals[1]))
+    plt.hist(plotVals, **histKwargs)
+
 # ==================================PLOTS=====================================:
 # ======================PRESR======================:
 # Pressure GPS plot:
@@ -215,6 +268,10 @@ plt.clf()
 
 gpsDataPlot(odoTime, odoData, colorBarLabel='Dissolved Oxygen (mgL) [vmin=9]',
             cmap=cm.jet, vmin=9)
+
+
+# =============================Histogram PLOTS================================:
+print len(gpsOverlaps(minTimeDiff=10, maxDistDiff=2))
 
 # PLOT:
 plt.show()
