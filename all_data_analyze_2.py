@@ -99,8 +99,8 @@ odoData = np.asarray(odoDataList)
 
 
 # ===========================PLOTTING FUNCTIONS===============================:
-def gpsDataPlot(times, data, cmap=cm.jet, colorBarLabel=None,
-                invertColorBar=False, timeMarkInterval=30):
+def gpsDataPlot(times, data, colorBarLabel=None,
+                invertColorBar=False, timeMarkInterval=30, **kwargs):
     newGpsDataList, newTimeList, newDataList = \
                                             au.nearestPairsFromTimesDelNone(
                                                 gpsTime.tolist(),
@@ -213,8 +213,8 @@ gpsDataPlot(temperatureTime, temperatureData,
 plt.figure(300)
 plt.clf()
 
-gpsDataPlot(odoTime, odoData, colorBarLabel='Dissolved Oxygen (mgL)',
-            cmap=cm.jet)
+gpsDataPlot(odoTime, odoData, colorBarLabel='Dissolved Oxygen (mgL) [vmin=9]',
+            cmap=cm.jet, vmin=9)
 
 # PLOT:
 plt.show()
