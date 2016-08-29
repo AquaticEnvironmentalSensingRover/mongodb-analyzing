@@ -209,7 +209,7 @@ gpsDataPlot(temperatureTime, temperatureData,
             colorBarLabel='Temperature (degC)', cmap=cm.jet)
 
 # =======================ODO=======================:
-# Temperature GPS plot:
+# Optical Dissolved Oxygen GPS plot:
 plt.figure(300)
 plt.clf()
 
