@@ -128,19 +128,15 @@ def gpsDataPlot(times, data, cmap=cm.jet, colorBarLabel=None,
     # Enable autoscaling
     plt.autoscale(True)
 
-    # Normal plotting:
-    normalPlot = False
-    if normalPlot:
-        plt.scatter(gpsLon, gpsLat, c='b', marker='.', edgecolors='face')
-    else:
-        plt.scatter(newGpsLon, newGpsLat, c=newData, marker='.', cmap=cmap,
-                    edgecolors='face')
-        gpsPressureColorBar = plt.colorbar()
-        if invertColorBar:
-            gpsPressureColorBar.ax.invert_yaxis()
-        if isinstance(colorBarLabel, str):
-            gpsPressureColorBar.ax.set_ylabel(colorBarLabel, rotation=270,
-                                              labelpad=20)
+    plt.scatter(newGpsLon, newGpsLat, c=newData, marker='.', edgecolors='face',
+                **kwargs)
+
+    gpsPressureColorBar = plt.colorbar()
+    if invertColorBar:
+        gpsPressureColorBar.ax.invert_yaxis()
+    if isinstance(colorBarLabel, str):
+        gpsPressureColorBar.ax.set_ylabel(colorBarLabel, rotation=270,
+                                          labelpad=20)
 
     plt.xlabel("Longitude (deg)")
     plt.ylabel("Latitude (deg)")
