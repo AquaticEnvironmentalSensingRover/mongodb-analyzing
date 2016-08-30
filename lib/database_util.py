@@ -1,5 +1,6 @@
 """Contain methods useful when analyzing data."""
 from pymongo import MongoClient
+import analyze_util as au
 import numbers
 import shelve
 import os
@@ -86,6 +87,20 @@ def dbColSelector(mongo, dbNameStartFilter="AESR_"):
     return (mongo[db])[col]
 
 
+# Private:
+def __listStringCheck(theList, listName):
+    for ii in theList:
+        if not isinstance(ii, basestring):
+            raise ValueError("The '{}' list must contain only strings"
+                             .format(listName))
+
+
+def __listsSameLength(list1, list1Name, list2, list2Name):
+    if not len(list1) == len(list2):
+        raise ValueError("The lists '{}' and {}".format(list1Name, list2Name) +
+                         " are not the same length")
+
+
 # Other:
 def dbColArgSelector(mongo, dbName, colName):
     """Return a 'pymongo' 'Collection' object from the inputted values.
@@ -132,16 +147,18 @@ def setDbCol(db, col):
         db (str, list[str]): The database name.
         col (str): The collection name.
     """
-    if not (isinstance(db, basestring) or isinstance(db, list)):
-        raise ValueError("The 'db' value is not a string or list")
-    if not isinstance(col, basestring):
-        raise ValueError("The 'col' value is not a string")
+    au._raiseIfWrongType(db, 'db', basestring, list)
+    au._raiseIfWrongType(col, 'col', basestring, list)
 
     if isinstance(db, list):
-        for ii in db:
-            if not isinstance(ii, basestring):
-                raise ValueError("The 'db' list must contain only strings")
+        __listStringCheck(db, 'db')
+    if isinstance(col, list):
+        __listStringCheck(col, 'col')
 
+    if isinstance(db, list) and isinstance(col, list):
+        if not len(db) == len(col):
+            raise ValueError("The 'db' and 'col' arguments must have the same"
+                             " length")
     try:
         d = shelve.open(SHELF_FILE)
         if isinstance(db, list):
@@ -149,7 +166,10 @@ def setDbCol(db, col):
         else:
             d[DB_KEY_NAME] = [db]
 
-        d[COL_KEY_NAME] = col
+        if isinstance(col, list):
+            d[COL_KEY_NAME] = col
+        else:
+            d[COL_KEY_NAME] = [col]
     finally:
         d.close()
 
@@ -250,13 +270,28 @@ def getDbsCol(mongo=None):
         raise ValueError("Please use the 'saveDbCol' function, to set the 'db' \
             and 'col' values")
 
-    mongos = []
+    if (len(db) > 1 and len(col) > 1):
+        __listsSameLength(db, 'db', col, 'col')
+
+    # Db + Col lists:
     if mongo is not None:
-        for eachDb in db:
-            mongos.append((mongo[eachDb])[col])
-        return mongos
-    else:
-        return {'db': db, 'col': col}
+        dbCols = []
+        if (len(db) > 1 and len(col) > 1):
+            for ii in range(len(db)):
+                dbCols.append(mongo[db[ii]][col[ii]])
+            return dbCols
+
+        elif len(db) > 1:
+            for eachDb in db:
+                dbCols.append((mongo[eachDb])[col[0]])
+            return dbCols
+
+        else:
+            for eachCol in col:
+                dbCols.append((mongo[db[0]])[eachCol])
+            return dbCols
+
+    return {'db': db, 'col': col}
 
 
 def getDbCol(mongo=None, *args, **kwargs):
