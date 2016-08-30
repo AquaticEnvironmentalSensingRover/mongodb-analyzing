@@ -1,5 +1,6 @@
 import lib.database_util as du
 from pymongo import MongoClient
+import math
 
 DEFAULTS = {"SERVER_HOST": ["localhost", "10.0.2.197", "192.168.42.50"],
             "SERVER_PORT": 27017}
@@ -43,14 +44,22 @@ if not runNum == '':
     runNum = __num(runNum)
     col = 'data'
 
+    db = []
     if runNum == 4:
-        db = 'AESR_20160716T184018'
-    elif runNum == 5.1:
-        db = 'AESR_20160717T154442'
-    elif runNum == 5.2:
-        db = 'AESR_20160717T165349'
-    elif runNum == 5.3:
-        db = 'AESR_20160717T193309'
+        db = ['AESR_20160716T184018']
+    elif math.floor(runNum) == 5:
+        dbs = ['AESR_20160717T154442', 'AESR_20160717T165349',
+               'AESR_20160717T193309']
+        if runNum == 5:
+            db = dbs
+        elif runNum == 5.1:
+            db = [dbs[0]]
+        elif runNum == 5.2:
+            db = [dbs[1]]
+        elif runNum == 5.3:
+            db = [dbs[2]]
+        else:
+            print "\nThe inputted sub-run number of '5' does not exist"
     else:
         print "\nThe inputted run number doesn't exist"
         manualEntry = True
@@ -91,7 +100,7 @@ print "\nSELECTED Server address: " + ipAddress
 print "SELECTED Server port: " + str(ipPort)
 du.setServerHost(ipAddress, ipPort)
 
-print "\nSELECTED Database: " + db
+print "\nSELECTED Database: " + str(db)
 print "SELECTED Collection: " + col
 du.setDbCol(db, col)
 
