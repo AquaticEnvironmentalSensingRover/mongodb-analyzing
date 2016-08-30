@@ -34,7 +34,7 @@ elif math.floor(runNum) == 5:
     tStopRun = time.mktime(datetime.datetime(2016, 7, 17, 23, 59).timetuple())
 else:
     raise ValueError("No known run number")
-dbCol = du.getDbCol(mongo)
+dbCols = du.getDbsCol(mongo)
 
 
 # Used to format the date/time axis
@@ -51,10 +51,11 @@ gpsLonList = []
 gpsLatList = []
 gpsTimeList = []
 for ii in gpsList:
-    for jj in dbCol.find({"atype": ii[0]}):
-        gpsLonList.append((jj["param"])["lon"])
-        gpsLatList.append((jj["param"])["lat"])
-        gpsTimeList.append(jj["ts"])
+    for dbCol in dbCols:
+        for jj in dbCol.find({"atype": ii[0]}):
+            gpsLonList.append((jj["param"])["lon"])
+            gpsLatList.append((jj["param"])["lat"])
+            gpsTimeList.append(jj["ts"])
 
 
 # Convert the lists to Numpy ndarray for later use
@@ -66,9 +67,10 @@ gpsTime = np.array(gpsTimeList)
 # Get pressure data:
 pressureTimeList = []
 pressureDataList = []
-for ii in dbCol.find({"atype": "PRESR"}):
-    pressureTimeList.append(ii['ts'])
-    pressureDataList.append(ii['param']['mbar'])
+for dbCol in dbCols:
+    for ii in dbCol.find({"atype": "PRESR"}):
+        pressureTimeList.append(ii['ts'])
+        pressureDataList.append(ii['param']['mbar'])
 
 pressureTime = np.asarray(pressureTimeList)
 pressureData = np.asarray(pressureDataList)
@@ -78,9 +80,10 @@ pressureData = np.asarray(pressureDataList)
 
 temperatureTimeList = []
 temperatureDataList = []
-for ii in dbCol.find({"atype": "TEMP"}):
-    temperatureTimeList.append(ii['ts'])
-    temperatureDataList.append(ii['param'])
+for dbCol in dbCols:
+    for ii in dbCol.find({"atype": "TEMP"}):
+        temperatureTimeList.append(ii['ts'])
+        temperatureDataList.append(ii['param'])
 
 temperatureTime = np.asarray(temperatureTimeList)
 temperatureData = np.asarray(temperatureDataList)
@@ -90,9 +93,10 @@ temperatureData = np.asarray(temperatureDataList)
 # Get optical dissolved oxygen data:
 odoTimeList = []
 odoDataList = []
-for ii in dbCol.find({"atype": "ODO"}):
-    odoTimeList.append(ii['ts'])
-    odoDataList.append(ii['param']['mgL'])
+for dbCol in dbCols:
+    for ii in dbCol.find({"atype": "ODO"}):
+        odoTimeList.append(ii['ts'])
+        odoDataList.append(ii['param']['mgL'])
 
 odoTime = np.asarray(odoTimeList)
 odoData = np.asarray(odoDataList)
