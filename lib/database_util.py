@@ -166,7 +166,10 @@ def setRunNumber(runNum):
         d = shelve.open(SHELF_FILE)
 
         if runNum is None:
-            del d[RUN_NUM_KEY_NAME]
+            try:
+                del d[RUN_NUM_KEY_NAME]
+            except KeyError:
+                pass
         else:
             if not isinstance(runNum, numbers.Number):
                 raise ValueError("The 'runNum' value is not a number "
