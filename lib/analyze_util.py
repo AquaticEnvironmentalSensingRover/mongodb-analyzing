@@ -7,7 +7,7 @@ warnings.simplefilter('once', DeprecationWarning)
 
 
 # Private:
-def __raiseIfWrongType(value, valueName, *targetTypes):
+def _raiseIfWrongType(value, valueName, *targetTypes):
     isType = False
     for targetType in targetTypes:
         if isinstance(value, targetType):
@@ -32,7 +32,7 @@ def __raiseIfWrongType(value, valueName, *targetTypes):
         raise TypeError(errorMessage)
 
 
-def __convertToNPArray(value):
+def _convertToNPArray(value):
     if not isinstance(value, np.ndarray):
         value = np.asarray(value)
     return value
@@ -80,13 +80,13 @@ def nearestIndexTime(times, targetTime, maximumTimeDiff=None):
             values are further away then 'maximumTimeDiff'.
         int: The index in the 'times' array of the closest value.
     """
-    __raiseIfWrongType(times, 'times', list, np.ndarray)
-    times = __convertToNPArray(times)
+    _raiseIfWrongType(times, 'times', list, np.ndarray)
+    times = _convertToNPArray(times)
 
-    __raiseIfWrongType(targetTime, 'targetTime', numbers.Number)
+    _raiseIfWrongType(targetTime, 'targetTime', numbers.Number)
 
-    __raiseIfWrongType(maximumTimeDiff, 'maximumTimeDiff', numbers.Number,
-                       type(None))
+    _raiseIfWrongType(maximumTimeDiff, 'maximumTimeDiff', numbers.Number,
+                      type(None))
 
     diffArray = np.abs(times-targetTime)
     valueIndex = diffArray.argmin()
@@ -125,11 +125,11 @@ def nearestPairsFromTimes(baseTimes, baseVals, targetTimes,
                 'maximumTimeDiff'.
             object: If a closest time value was found.
     """
-    __raiseIfWrongType(baseTimes, 'baseTimes', list)
-    __raiseIfWrongType(baseVals, 'baseVals', list)
-    __raiseIfWrongType(targetTimes, 'targetTimes', list)
+    _raiseIfWrongType(baseTimes, 'baseTimes', list)
+    _raiseIfWrongType(baseVals, 'baseVals', list)
+    _raiseIfWrongType(targetTimes, 'targetTimes', list)
     if maximumTimeDiff is not None:
-        __raiseIfWrongType(maximumTimeDiff, 'maximumTimeDiff', numbers.Number)
+        _raiseIfWrongType(maximumTimeDiff, 'maximumTimeDiff', numbers.Number)
 
     if not len(baseTimes) == len(baseVals):
         raise ValueError("The 'baseTimes' and 'baseVals' lists must have the"
@@ -178,9 +178,9 @@ def nearestPairsFromTimesDelNone(baseTimes, baseVals, targetTimes,
                 index [Not returned if targetVals is 'None'].
         )
     """
-    __raiseIfWrongType(targetTimes, 'targetTimes', list)
+    _raiseIfWrongType(targetTimes, 'targetTimes', list)
     if targetVals is not None:
-        __raiseIfWrongType(targetVals, 'targetVals', list)
+        _raiseIfWrongType(targetVals, 'targetVals', list)
         if not len(targetTimes) == len(targetVals):
             raise ValueError("The 'targetTimes' and 'targetVals' lists must "
                              "have the same length")
