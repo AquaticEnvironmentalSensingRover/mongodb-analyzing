@@ -129,17 +129,26 @@ def setDbCol(db, col):
     """Save inputted database and collection name into a shelve file.
 
     Args:
-        db (str): The database name.
+        db (str, list[str]): The database name.
         col (str): The collection name.
     """
-    if not isinstance(db, basestring):
-        raise ValueError("The 'db' value is not a string")
+    if not (isinstance(db, basestring) or isinstance(db, list)):
+        raise ValueError("The 'db' value is not a string or list")
     if not isinstance(col, basestring):
         raise ValueError("The 'col' value is not a string")
 
+    if isinstance(db, list):
+        for ii in db:
+            if not isinstance(ii, basestring):
+                raise ValueError("The 'db' list must contain only strings")
+
     try:
         d = shelve.open(SHELF_FILE)
-        d[DB_KEY_NAME] = db
+        if isinstance(db, list):
+            d[DB_KEY_NAME] = db
+        else:
+            d[DB_KEY_NAME] = [db]
+
         d[COL_KEY_NAME] = col
     finally:
         d.close()
@@ -204,8 +213,54 @@ def getServerHost(createMongoClient=False):
         return {'addr': addr, 'port': port}
 
 
-def getDbCol(mongo=None):
+def getDbsCol(mongo=None):
+    """Return database and collection names saved in the shelve file.
+
+    Args:
+        mongo (pymongo.MongoClient): If a value is supplied, a 'Collection'
+            object will be returned instead (defaults to 'None').
+
+    Returns:
+        if mongo is not None:
+            Collection: A list of 'pymongo' 'Collection' objects selected using
+                the database and collection names, and the
+                'pymongo.MongoClient' object.
+        else:
+            dict:
+                {
+                    'db' (list[str]): The stored database name.
+                    'col' (str): The stored collection name.
+                }
+
+    """
+    if not (isinstance(mongo, MongoClient) or mongo is None):
+        raise ValueError("Please supply a 'pymongo.MongoClient' object for"
+                         "argument 'mongo'")
+    try:
+        d = shelve.open(SHELF_FILE)
+        db = d.get(DB_KEY_NAME, None)
+        col = d.get(COL_KEY_NAME, None)
+    finally:
+        d.close()
+
+    if db is None or col is None:
+        raise ValueError("Please use the 'saveDbCol' function, to set the 'db' \
+            and 'col' values")
+
+    mongos = []
+    if mongo is not None:
+        for eachDb in db:
+            mongos.append((mongo[eachDb])[col])
+        return mongos
+    else:
+        return {'db': db, 'col': col}
+
+
+def getDbCol(mongo=None, *args, **kwargs):
     """Return database and collection name saved in the shelve file.
+
+    NOTE: Function is kept to keep backwards compatibilty with single dbCol
+        scripts.
 
     Args:
         mongo (pymongo.MongoClient): If a value is supplied, a 'Collection'
@@ -224,21 +279,14 @@ def getDbCol(mongo=None):
                 }
 
     """
-    try:
-        d = shelve.open(SHELF_FILE)
-        db = d.get(DB_KEY_NAME, None)
-        col = d.get(COL_KEY_NAME, None)
-    finally:
-        d.close()
-
-    if db is None or col is None:
-        raise ValueError("Please use the 'saveDbCol' function, to set the 'db' \
-            and 'col' values")
-
-    if mongo is not None:
-        return (mongo[db])[col]
+    value = getDbsCol(*args, mongo=mongo, **kwargs)
+    if mongo is None:
+        db = value['db']
+        del value['db']
+        value['db'] = db[0]
+        return value
     else:
-        return {'db': db, 'col': col}
+        return value[0]
 
 
 def getServerDbCol():
