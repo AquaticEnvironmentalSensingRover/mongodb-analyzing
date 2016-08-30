@@ -68,6 +68,10 @@ else:
 
 #   Text input DbCol:
 if manualEntry:
+    db = []
+    col = []
+
+while manualEntry:
     rawDbNames = sorted(mongo.database_names(), reverse=True)
 
     # Print databases filtering with the supplied argument
@@ -80,20 +84,29 @@ if manualEntry:
 
     # Print filtered list of databases
     print("\nDatabases (newest -> oldest based on name):\n" + str(dbNames))
-    db = raw_input("DB Name (Index number of DB or name): ")
+    newDb = raw_input("DB Name (Index number of DB or name): ")
 
     # Treat input as integer for an index,
     # but if something goes wrong, use the input as the database name
     try:
-        db = (dbNames)[int(db)]
-        print db
+        newDb = (dbNames)[int(newDb)]
+        print newDb
     except ValueError:
         pass
 
-    # Print collection names in the given database
-    print("\nCollections:\n" + str(sorted(mongo[db].collection_names())))
-    col = raw_input("Col Name: ")
+    if newDb == '':
+        break
+    db.append(newDb)
 
+    # Print collection names in the given database
+    print("\nCollections:\n" + str(sorted(mongo[newDb].collection_names())))
+    newCol = raw_input("Col Name: ")
+    if newCol == '':
+        raise ValueError('Collection name was empty')
+    col.append(newCol)
+
+if len(db) == 0:
+    raise ValueError("No database/collection pairs specified")
 
 # Value writing
 print "\nSELECTED Server address: " + ipAddress
@@ -101,7 +114,7 @@ print "SELECTED Server port: " + str(ipPort)
 du.setServerHost(ipAddress, ipPort)
 
 print "\nSELECTED Database: " + str(db)
-print "SELECTED Collection: " + col
+print "SELECTED Collection: " + str(col)
 du.setDbCol(db, col)
 
 print "\nSELECTED Run number: " + str(runNum)
