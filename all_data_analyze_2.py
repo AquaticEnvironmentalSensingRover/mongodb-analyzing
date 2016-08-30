@@ -47,10 +47,10 @@ formatter = DateFormatter('%H:%M')
 # Get GPS data
 # gpsList = [("GPS","bo"), ("IGPS","r-")]
 gpsList = [("GPS", "b.")]
+gpsLonList = []
+gpsLatList = []
+gpsTimeList = []
 for ii in gpsList:
-    gpsLonList = []
-    gpsLatList = []
-    gpsTimeList = []
     for jj in dbCol.find({"atype": ii[0]}):
         gpsLonList.append((jj["param"])["lon"])
         gpsLatList.append((jj["param"])["lat"])
