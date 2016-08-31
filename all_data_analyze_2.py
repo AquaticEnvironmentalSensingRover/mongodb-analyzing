@@ -81,7 +81,7 @@ pressureData = np.asarray(pressureDataList)
 temperatureTimeList = []
 temperatureDataList = []
 for dbCol in dbCols:
-    for ii in dbCol.find({"atype": "TEMP"}):
+    for ii in dbCol.find({"atype": "TEMP", "itype": 0}):
         temperatureTimeList.append(ii['ts'])
         temperatureDataList.append(ii['param'])
 
