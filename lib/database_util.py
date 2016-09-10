@@ -215,7 +215,7 @@ def getServerHost(createMongoClient=False):
         else:
             dict:
                 {
-                    'addr' (str): The stored server address.
+                    'host' (str): The stored server address.
                     'port' (int): The stored server port.
                 }
     """
@@ -233,7 +233,7 @@ def getServerHost(createMongoClient=False):
     if createMongoClient is True:
         return MongoClient(addr, port)
     else:
-        return {'addr': addr, 'port': port}
+        return {'host': addr, 'port': port}
 
 
 def getDbsCol(mongo=None):
