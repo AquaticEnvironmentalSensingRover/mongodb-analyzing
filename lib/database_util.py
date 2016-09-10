@@ -10,7 +10,7 @@ DEFAULTS = {"server": ["localhost", "10.0.2.197", "192.168.42.50"]}
 DB_KEY_NAME = 'DB'
 COL_KEY_NAME = 'COL'
 RUN_NUM_KEY_NAME = 'RUN_NUM'
-SERVER_ADDR_KEY_NAME = 'ADDR'
+SERVER_HOST_KEY_NAME = 'HOST'
 SERVER_PORT_KEY_NAME = 'PORT'
 SHELF_FILE = os.path.dirname(os.path.abspath(__file__)) + '/dbCol.shelf'
 
@@ -120,21 +120,21 @@ def dbColArgSelector(mongo, dbName, colName):
 
 
 # SAVE:
-def setServerHost(addr, port):
+def setServerHost(host, port):
     """Save inputted database and collection name into a shelve file.
 
     Args:
-        addr (str): The server address.
+        host (str): The server address.
         port (int): The server port.
     """
-    if not isinstance(addr, basestring):
-        raise ValueError("The 'addr' value is not a string")
+    if not isinstance(host, basestring):
+        raise ValueError("The 'host' value is not a string")
     if not isinstance(port, int):
         raise ValueError("The 'port' value is not an int")
 
     try:
         d = shelve.open(SHELF_FILE)
-        d[SERVER_ADDR_KEY_NAME] = addr
+        d[SERVER_HOST_KEY_NAME] = host
         d[SERVER_PORT_KEY_NAME] = port
     finally:
         d.close()
@@ -221,19 +221,19 @@ def getServerHost(createMongoClient=False):
     """
     try:
         d = shelve.open(SHELF_FILE)
-        addr = d.get(SERVER_ADDR_KEY_NAME, None)
+        host = d.get(SERVER_HOST_KEY_NAME, None)
         port = d.get(SERVER_PORT_KEY_NAME, None)
     finally:
         d.close()
 
-    if addr is None or port is None:
+    if host is None or port is None:
         raise ValueError("Please use the 'saveDbCol' function, to set \
-                         'addr' and 'port'")
+                         'host' and 'port'")
 
     if createMongoClient is True:
-        return MongoClient(addr, port)
+        return MongoClient(host, port)
     else:
-        return {'host': addr, 'port': port}
+        return {'host': host, 'port': port}
 
 
 def getDbsCol(mongo=None):
