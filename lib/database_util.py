@@ -201,7 +201,7 @@ def setRunNumber(runNum):
 
 
 # GET:
-def getServerHost(createMongoClient=False):
+def getServerHost(createMongoClient=False, *args, **kwargs):
     """Return host and port of the server saved in the shelve file.
 
     Args:
@@ -231,7 +231,7 @@ def getServerHost(createMongoClient=False):
                          'host' and 'port'")
 
     if createMongoClient is True:
-        return MongoClient(host, port)
+        return MongoClient(host, port, *args, **kwargs)
     else:
         return {'host': host, 'port': port}
 
