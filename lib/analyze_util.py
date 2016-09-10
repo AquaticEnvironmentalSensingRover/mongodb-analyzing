@@ -1,4 +1,5 @@
 """Contain methods useful when analyzing data."""
+from geopy.distance import vincenty
 import numpy as np
 import numbers
 import database_util as du
@@ -199,3 +200,32 @@ def nearestPairsFromTimesDelNone(baseTimes, baseVals, targetTimes,
                 del delList[ii]
 
     return returnArrays
+
+
+def meterDistance(loc1, loc2=None, preset=None):
+    """Return meter distance between two coordinates.
+
+    A known preset name can be supplied for a saved 'loc2' value.
+
+    Preset Values:
+        'start1': (41.737356, -71.319894)
+
+    Args:
+        loc1 (tuple): Coordinate pair 1.
+        loc2 (tuple, None): Coordinate pair 2 (Defaults to 'None').
+        preset (None, basestring): A valid preset name.
+
+    Returns:
+        int: Distance between 'loc1' and 'loc2' in meters.
+    """
+    if (loc2 is None and preset is None) \
+            and (loc2 is not None and preset is not None):
+        raise ValueError("Please supply 'loc2' or 'preset' argument")
+
+    # Presets:
+    if preset == 'start1':
+        loc2 = (41.737356, -71.319894)
+    else:
+        return ValueError("Inputted 'preset' value unknown")
+
+    return vincenty(loc1, loc2).meters
