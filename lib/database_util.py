@@ -17,20 +17,20 @@ SHELF_FILE = os.path.dirname(os.path.abspath(__file__)) + '/dbCol.shelf'
 
 # Input selectors:
 def serverAddressSelector():
-    """Return selected server address.
+    """Return selected server host.
 
     Default options are printed before input is asked for.
 
     Inputs:
-        raw_input (str, int): Server address or the index number in the printed
+        raw_input (str, int): Server host or the index number in the printed
             string
 
     Returns:
-        str: The selected server address.
+        str: The selected server host.
     """
-    print("\n Use IP address or:\n\nUse index number of IP address in:"
-          "\nDefault server IP Addresses:\n" + str(DEFAULTS["server"]))
-    ipAddress = raw_input("Server IP Address: ")
+    print("\n Use host or:\n\nUse index number of host in:"
+          "\nDefault server hosts:\n" + str(DEFAULTS["server"]))
+    ipAddress = raw_input("Server host: ")
 
     try:
         return (DEFAULTS["server"])[int(ipAddress)]
@@ -124,7 +124,7 @@ def setServerHost(host, port):
     """Save inputted database and collection name into a shelve file.
 
     Args:
-        host (str): The server address.
+        host (str): The server host.
         port (int): The server port.
     """
     if not isinstance(host, basestring):
@@ -202,7 +202,7 @@ def setRunNumber(runNum):
 
 # GET:
 def getServerHost(createMongoClient=False):
-    """Return address and port of the server saved in the shelve file.
+    """Return host and port of the server saved in the shelve file.
 
     Args:
         createMongoClient (bool): If this is 'True', a 'pymongo.MongoClient'
@@ -211,11 +211,11 @@ def getServerHost(createMongoClient=False):
     Returns:
         if createMongoClient is True:
             pymongo.MongoClient: A 'pymongo.MongoClient' object, created using
-                the stored address and port.
+                the stored host and port.
         else:
             dict:
                 {
-                    'host' (str): The stored server address.
+                    'host' (str): The stored server host.
                     'port' (int): The stored server port.
                 }
     """
@@ -330,9 +330,9 @@ def getDbCol(mongo=None, *args, **kwargs):
 def getServerDbCol():
     """Return a 'pymongo' 'Collection' object using the stored values.
 
-    The stored server address values are used to create a
-        'pymongo.MongoClient' object. This and the stored database and
-        collection values are used to make the 'pymongo' 'Collection' object.
+    The stored server host values are used to create a 'pymongo.MongoClient'
+        object. This and the stored database and collection values are used to
+        make the 'pymongo' 'Collection' object.
     """
     mongo = getServerHost(createMongoClient=True)
     return getDbCol(mongo)
