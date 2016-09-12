@@ -1,4 +1,9 @@
-"""Contain methods useful when analyzing data."""
+"""
+Contain methods useful when analyzing data.
+
+160911 RG Include Oxygen Saturation Function
+
+"""
 from geopy.distance import vincenty
 import numpy as np
 import numbers
@@ -229,3 +234,70 @@ def meterDistance(loc1, loc2=None, preset=None):
         return ValueError("Inputted 'preset' value unknown")
 
     return vincenty(loc1, loc2).meters
+
+
+#----------------------------------------------------------------
+# Function that provides the mg/L levels for 
+# 100% dissolved oxygen at a given temperature
+#    concDisOxySaturated(pressure in mmHg , Temperature in degC )
+#
+# 160910 RG
+#
+
+from scipy import interpolate
+
+def concDisOxySaturated(pressure_mmHg , Temperature_degC ):
+    # Calibration Table
+    # 160910
+    # http://www.vernier.com/files/manuals/odo-bta/odo-bta.pdf
+    # 100% SATURATED VALUES
+    
+    x_pressmmHg = [770. , 760. , 750. , 740. ]  # PRESSURE mmHg
+    x_pressmmHg = np.array(x_pressmmHg)
+    
+    y_degC = [0.,1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,14.,16.,18.,20.,22.,24.,26.,28.,30.,32.,34.]   # TEMPERATURE degC
+    y_degC = np.array(y_degC)
+    
+    
+    z_mgPerL = [ # 770 , 760 , 750 ,740
+    [14.76,	14.57,	14.38,	14.19], # 0 degC
+    [14.38,	14.19,	14,	13.82], # 1
+    [14.01,	13.82,	13.64,	13.46], # 2
+    [13.65,	13.47,	13.29,	13.12], # 3
+    [13.31,	13.13,	12.96,	12.79], # 4
+    [12.97,	12.81,	12.64,	12.47], # 5
+    [12.66,	12.49,	12.33,	12.16], # 6
+    [12.35 , 12.19 , 12.03 , 11.87],# 7 
+    [12.05 , 11.90 , 11.74 , 11.58],# 8
+    [11.77,11.62,11.46,11.31], #9
+    [11.50,11.35,11.20,11.05], #10
+    [11.24,11.09,10.94,10.80], #11
+    [10.98,10.84,10.70,10.56], #12
+    [10.51,10.37,10.24,10.10], #14
+    [10.07,9.94,9.81,9.68], #16
+    [9.67,9.54,9.41,9.29], #18
+    [9.29,9.17,9.05,8.93], #20
+    [8.94,8.83,8.71,8.59], #22
+    [8.62,8.51,8.40,8.28], #24
+    [8.32,8.21,8.10,7.99], #26
+    [8.04,7.93,7.83,7.72], #28
+    [7.77,7.67,7.57,7.47], #30
+    [7.51,7.42,7.32,7.22], #32
+    [7.27,7.17,7.08,6.98], #34
+    ]
+    z_mgPerL = np.array(z_mgPerL)
+    
+    # scipy.interpolate.interp2d
+    #  http://docs.scipy.org/doc/scipy-0.13.0/reference/generated/scipy.interpolate.interp2d.html
+    #
+    
+    # Define function to call
+    _concDisOxySaturated = interpolate.interp2d( x_pressmmHg, y_degC, z_mgPerL , kind='linear')
+    
+    x = _concDisOxySaturated( pressure_mmHg , Temperature_degC )
+    
+    return np.tolist()
+#    return np.array( x , dtype = 'float64' )
+    
+    # To use function    concDisOxySaturated(pressure in mmHg , Temperature in degC )
+    

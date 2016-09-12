@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# example_analyze_data_RG.py
 # THIS IS A HEAVILY MODIFED VERSION OF "all_data_analyze.py"
 # 160703 v2 RG Changing format of date printout to help with analysis after data taking
 #  Modify formats for arrays to Numpy Arrays to allow subsequent analysis interactively
@@ -6,7 +7,9 @@
 # 160706 RG Push to Git
 # 160707 RG Edited,comments for clarity
 # 160717 PTAG Edit for Run 4
-
+# 160911 Looking at dissolved Oxygen Corrected Data
+#
+#
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -40,7 +43,7 @@ import lib.database_util as du
 #runNum = 5.2
 
 
-mongo = du.getServerHost(True)
+mongo = MongoClient( **du.getServerHost() )
 runNum = du.getRunNumber()
 dbCols = du.getDbsCol(mongo)
 
@@ -264,6 +267,11 @@ for ii in range(sensorAmount):  # Loop through all 5 thermometers
 #tempTime = np.empty((0,),dtype=float)
 #tempIndex = np.empty((0,),dtype=int)
 #tempValue = np.empty((0,),dtype=float)
+
+# tempIndex
+# 0 - Short Cable with ODO
+# 1 - 1m next to pressure
+# 2 - Air temperature
     
 # Make Numpy version    
 tempTime = []
@@ -408,7 +416,7 @@ plt.show()
 ff = 17
 
 plt.figure(ff)
-if True :
+if False :
     plt.clf()
     
     # http://matplotlib.org/examples/axes_grid/demo_parasite_axes2.html
@@ -535,9 +543,9 @@ plt.show()
  
 ff = 19
 plt.figure(ff)
-if True :
+if False :
     plt.clf()
-        plt.title("ADC (Run: %.2f)" % runNum )
+    plt.title("ADC (Run: %.2f)" % runNum )
 
     # ADC
     cutTime = ( ( odoCorrTime >= tStartRun ) & (odoCorrTime <= tStopRun) ) # Make a cut
@@ -564,7 +572,7 @@ odoCorrVolt = m * odoCorrAdc + c
 # Default software calibration values (mg/L)
 #slope: 4.444
 #intercept: –0.4444
-m = 4.444  # 4.444 (mg/L) / volt
+m = 4.444e-3  # 4.444e-3 (mg/L) / millivolt
 c = -0.4444 # (mg/L)
 odoCorrConcentration = m * odoCorrVolt + c   #(mg/L)
 
@@ -576,20 +584,61 @@ odoCorrConcentration = m * odoCorrVolt + c   #(mg/L)
 #
 
 
-
 ff = 20
 plt.figure(ff)
 if True :
     plt.clf()
-        plt.title("ADC (Run: %.2f)" % runNum )
+    plt.title("ADC (Run: %.2f)" % runNum )
 
     # ADC
     cutTime = ( ( odoCorrTime >= tStartRun ) & (odoCorrTime <= tStopRun) ) # Make a cut
     cut = cutTime
-
-    plt.plot( [ datetime.datetime.fromtimestamp(x) for x in (odoCorrTime[ cut ]) ]  , odoCorrAdc[ cut ] , 'r.' )
-    plt.ylabel("ADC")
     plt.xlabel("Time")
+
+    if False:
+        plt.plot( [ datetime.datetime.fromtimestamp(x) for x in (odoCorrTime[ cut ]) ]  , odoCorrAdc[ cut ] , 'r.' )
+        plt.ylabel("ADC")
+
+    if True:
+        plt.plot( [ datetime.datetime.fromtimestamp(x) for x in (odoCorrTime[ cut ]) ]  , odoCorrConcentration[ cut ] , 'r.' )
+        plt.ylabel("Corrected Concentration (mg/L)")
+            
+else :
+    plt.close(ff)
+
+plt.show()
+
+
+
+
+# Using - nearestPairsFromTimes(baseTimes, baseVals, targetTime , maximumTimeDiff=None):
+# Use ODO temperature
+ff = 21
+plt.figure(ff)
+if True :
+    plt.clf()
+    
+    plt.title("Temperature & DO (Run: %.2f)" % runNum )
+
+    # Temperature sensor next to ODO
+    cutT = ( ( tempTime >= tStartRun ) & (tempTime <= tStopRun) ) # Make a cut of useful Run data
+    cutO = ( ( odoCorrTime >= tStartRun ) & (odoCorrTime <= tStopRun) ) # Make a cut of useful Run data
+
+    # Find the temperatures at the times of the ODO
+    temp = au.nearestPairsFromTimes( 
+        tempTime[cutT & (tempIndex == 0)].tolist() # All avaialble temp times
+        , tempValue[cutT & (tempIndex == 0)].tolist() # All avaialble temp vallues
+        , odoCorrTime[cutO].tolist() # Times of the ODO data we want find temperature values for
+        , 3 )
+    
+    # 100% Oxygen Reference
+    # au.concDisOxySaturated(740.,20.)
+
+    plt.plot(  odoCorrTime[cutO]  , [ au.concDisOxySaturated(760., x ) for x in temp ] , 'b.' , markersize = 3 )
+
+    plt.ylabel("Concentration 100% (mg/L)")
+    plt.ylabel("T (degC)")
+    plt.xlabel("Date")
       
 else :
     plt.close(ff)
