@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # THIS IS A HEAVILY MODIFED VERSION OF "all_data_analyze.py"
 # 160703 v2 RG Changing format of date printout to help with analysis after data taking
 #  Modify formats for arrays to Numpy Arrays to allow subsequent analysis interactively
@@ -22,37 +23,63 @@ from mpl_toolkits.axes_grid1 import host_subplot
 import mpl_toolkits.axisartist as AA 
 import matplotlib.pyplot as plt
 
+# Luc's library for defining which Run sets and databases - see set_mongo_values.py
+import lib.database_util as du
+
+
+
 # PICK SERVER OR USE PRESET
 #mongo = MongoClient(host=au.serverAddressSelector())
-mongo = MongoClient( ) # local
+#mongo = MongoClient( ) # local
 #mongo = MongoClient(host="10.0.2.197")
 #mongo = MongoClient(host="172.16.0.2")
 # PICK COLLECTION
 #dbCol = au.dbColSelector(mongo)
 
+# Run004
+#runNum = 5.2
+
+
+mongo = du.getServerHost(True)
+runNum = du.getRunNumber()
+dbCols = du.getDbsCol(mongo)
 
 # Cut the data for only that when on the lake
 # Epoch times for start and stop
 
-# Run004
-runNum = 5.2
 
 if(runNum==4) :
     tStartRun = time.mktime( datetime.datetime(2016, 7, 16, 18, 40).timetuple() )
     tStopRun = time.mktime( datetime.datetime(2016, 7, 16, 19, 30).timetuple() )
-    dbCol = ( mongo['AESR_20160716T184018'] )['data']
+    # dbCol = ( mongo['AESR_20160716T184018'] )['data']
 elif( (runNum>=5) & (runNum<6) ) :
     tStartRun = time.mktime( datetime.datetime(2016, 7, 17, 0, 0 ).timetuple() )
     tStopRun = time.mktime( datetime.datetime(2016, 7, 17, 23, 59 ).timetuple() )
-    if runNum==5.1: dbCol = ( mongo['AESR_20160717T154442'] )['data'] 
-    if runNum==5.2: dbCol = ( mongo['AESR_20160717T165349'] )['data'] 
-    if runNum==5.3: dbCol = ( mongo['AESR_20160717T193309'] )['data'] 
+    #if runNum==5.1: dbCol = ( mongo['AESR_20160717T154442'] )['data'] 
+    #if runNum==5.2: dbCol = ( mongo['AESR_20160717T165349'] )['data'] 
+    #if runNum==5.3: dbCol = ( mongo['AESR_20160717T193309'] )['data'] 
     
 
 
 # Used to format the date/time axis
 # formatter = DateFormatter('%H:%M:%S')
 formatter = DateFormatter('%H:%M')
+
+
+
+
+# ======================ODO======================:
+# Get optical dissolved oxygen ADC:
+odoCorrTimeList = []
+odoCorrAdcList = []
+for dbCol in dbCols:
+    for ii in dbCol.find({"atype": "ODO"}):
+        odoCorrTimeList.append(ii['ts'])
+        odoCorrAdcList.append(ii['param']['rawADC'])
+
+odoCorrTime = np.asarray(odoCorrTimeList)
+odoCorrAdc = np.asarray(odoCorrAdcList)
+
 
 
 
@@ -71,12 +98,12 @@ for ii in gpsList:
     gpsLon = []  # lists
     gpsLat = []
     gpsTime = []
-    for jj in dbCol.find({"atype":ii[0]}):
-        gpsLon.append((jj["param"])["lon"])  # appending to list is very easy
-        gpsLat.append((jj["param"])["lat"])
-        gpsTime.append( jj["ts"] )
+    for dbCol in dbCols:
+        for jj in dbCol.find({"atype":ii[0]}):
+            gpsLon.append((jj["param"])["lon"])  # appending to list is very easy
+            gpsLat.append((jj["param"])["lat"])
+            gpsTime.append( jj["ts"] )
         
-
 # Convert the lists to Numpy ndarray for later use
 gpsLat = np.array( gpsLat )   # now convert to ndarray for later analysis
 gpsLon = np.array( gpsLon )
@@ -149,9 +176,10 @@ t0 = time.time()
 pressrValue = []
 pressrTime = []
 
-for ii in dbCol.find({"atype":"PRESR"}):
-    pressrValue.append( (ii["param"])["mbar"])
-    pressrTime.append( ii["ts"] )
+for dbCol in dbCols:
+    for ii in dbCol.find({"atype":"PRESR"}):
+        pressrValue.append( (ii["param"])["mbar"])
+        pressrTime.append( ii["ts"] )
 
 # Convert the lists to Numpy ndarray for later use
 pressrValue = np.array( pressrValue )
@@ -188,9 +216,10 @@ if False:
     depthValue = []
     depthTime = []
     
-    for ii in dbCol.find({"atype":"SONAR"}):
-        depthValue.append(ii["param"])
-        depthTime.append( ii["ts"] - t0)
+    for dbCol in dbCols:
+        for ii in dbCol.find({"atype":"SONAR"}):
+            depthValue.append(ii["param"])
+            depthTime.append( ii["ts"] - t0)
     
     plt.plot(depthTime, depthValue, "mo")
     
@@ -223,9 +252,10 @@ data = []
 for ii in range(sensorAmount):  # Loop through all 5 thermometers
     newTimeStamp = []
     newData = []
-    for jj in dbCol.find({"atype":"TEMP", "itype":ii}):
-        newTimeStamp.append(jj["ts"])
-        newData.append(jj["param"])
+    for dbCol in dbCols:
+        for jj in dbCol.find({"atype":"TEMP", "itype":ii}):
+            newTimeStamp.append(jj["ts"])
+            newData.append(jj["param"])
     
     timeStamp.append(newTimeStamp)
     data.append(newData)
@@ -240,10 +270,11 @@ tempTime = []
 tempIndex = []
 tempValue = []
 
-for ii in dbCol.find({"atype":"TEMP"}):
-    tempTime.append( ii["ts"])
-    tempIndex.append(ii["itype"])
-    tempValue.append(ii["param"])
+for dbCol in dbCols:
+    for ii in dbCol.find({"atype":"TEMP"}):
+        tempTime.append( ii["ts"])
+        tempIndex.append(ii["itype"])
+        tempValue.append(ii["param"])
 
 # Convert the lists to Numpy ndarray for later use
 tempTime = np.array( tempTime )
@@ -276,17 +307,18 @@ plt.subplot(111)
 plt.autoscale(True)
 t0 = time.time()
 plt.title("ODO (Latest data: %f)" % t0 )
-plt.ylabel("Dat value (idk)")
+plt.ylabel("Dat value (mg/L)")
 plt.xlabel("Time (s)")
 
-odoADC = []
+odoConcentration = [] # mg/L
 odoTime = []
 
-for ii in dbCol.find({"atype":"ODO"}):
-    odoADC.append(ii["param"]["mgL"])
-    odoTime.append( ii["ts"] - t0)
+for dbCol in dbCols:
+    for ii in dbCol.find({"atype":"ODO"}):
+        odoConcentration.append(ii["param"]["mgL"])
+        odoTime.append( ii["ts"] - t0)
 
-plt.plot(odoTime, odoADC, "g-")
+plt.plot(odoTime, odoConcentration, "g-")
 
 
 plt.show()
@@ -337,7 +369,7 @@ else :
 
 # Show the 1 m temperature data and the pressure depth
 plt.figure(16)
-if True :
+if False :
     plt.clf()
     
     plt.subplot('211')
@@ -467,7 +499,7 @@ plt.show()
 # Show the 1 m temperature data and the pressure depth
 ff = 18
 plt.figure(ff)
-if True :
+if False :
     plt.clf()
     
     plt.title("Temperature & Pressure (Run: %.2f)" % runNum )
@@ -495,3 +527,71 @@ else :
 
 plt.show()
 
+
+
+# ==========================================================
+# MAKE A CORRECTION TO   ODO  DUE TO ADC INPUT MISTAKE
+# 
+ 
+ff = 19
+plt.figure(ff)
+if True :
+    plt.clf()
+        plt.title("ADC (Run: %.2f)" % runNum )
+
+    # ADC
+    cutTime = ( ( odoCorrTime >= tStartRun ) & (odoCorrTime <= tStopRun) ) # Make a cut
+    cut = cutTime
+
+    plt.plot( [ datetime.datetime.fromtimestamp(x) for x in (odoCorrTime[ cut ]) ]  , odoCorrAdc[ cut ] , 'r.' )
+    plt.ylabel("ADC")
+    plt.xlabel("Time")
+      
+else :
+    plt.close(ff)
+
+# 160910 LCOG / RG
+# Linear correction of ADC reading into volts needs to create that reading 
+# (when ADC is incorrectly set to Diff Input FS +/-4.0V but only INPUT0 is connected with INPUT1 floating)
+# See Google Spreadsheet   https://docs.google.com/spreadsheets/d/1cGLoH5cN5xOTv3Kym1i6xxTGEeZmTAHXD81e3mx0zYE/edit#gid=2060652824
+m = 1. / ( 7.808 )  # 7.808 ADC bins/mV
+c = 573.46 # 573.46 mV for an ADC reading of 0
+odoCorrVolt = m * odoCorrAdc + c
+
+# 160910 LCOG / RG
+# Voltage to mg/L value
+# http://www.vernier.com/manuals/odo-bta/#section7
+# Default software calibration values (mg/L)
+#slope: 4.444
+#intercept: –0.4444
+m = 4.444  # 4.444 (mg/L) / volt
+c = -0.4444 # (mg/L)
+odoCorrConcentration = m * odoCorrVolt + c   #(mg/L)
+
+# 160910 LCOG / RG
+# Temperature corresponding to ODO measurement and the expected Saturated ODO for that temperature
+#   https://docs.google.com/spreadsheets/d/1YGhftt8NhKRW-xAtrbqHCD3r475q2NzWm7DT7LLnwFs/edit#gid=0
+#   http://www.vernier.com/files/manuals/odo-bta.pdf
+#
+#
+
+
+
+ff = 20
+plt.figure(ff)
+if True :
+    plt.clf()
+        plt.title("ADC (Run: %.2f)" % runNum )
+
+    # ADC
+    cutTime = ( ( odoCorrTime >= tStartRun ) & (odoCorrTime <= tStopRun) ) # Make a cut
+    cut = cutTime
+
+    plt.plot( [ datetime.datetime.fromtimestamp(x) for x in (odoCorrTime[ cut ]) ]  , odoCorrAdc[ cut ] , 'r.' )
+    plt.ylabel("ADC")
+    plt.xlabel("Time")
+      
+else :
+    plt.close(ff)
+
+plt.show()

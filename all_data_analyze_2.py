@@ -3,6 +3,11 @@
 #   data taking
 # Modify formats for arrays to Numpy Arrays to allow subsequent analysis
 #   interactively
+#
+# 160910 RG Load ODO ADC data 
+#
+#
+#
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -100,6 +105,18 @@ for dbCol in dbCols:
 
 odoTime = np.asarray(odoTimeList)
 odoData = np.asarray(odoDataList)
+
+# ======================ODO======================:
+# Get optical dissolved oxygen ADC:
+odoCorrTimeList = []
+odoCorrAdcList = []
+for dbCol in dbCols:
+    for ii in dbCol.find({"atype": "ODO"}):
+        odoCorrTimeList.append(ii['ts'])
+        odoCorrAdcList.append(ii['param']['rawADC'])
+
+odoCorrTime = np.asarray(odoCorrTimeList)
+odoCorrAdc = np.asarray(odoCorrAdcList)
 
 
 # ===========================PLOTTING FUNCTIONS===============================:
